@@ -15,7 +15,7 @@
 
 Les pièces de Tetris (tétrominos) sont représentées sous forme de tableaux 2D. Chaque `1` dans le tableau représente un bloc de la pièce, et chaque `0` représente un espace vide.
 
-### 3.1. Pièce `O` (carré) ❌
+### 3.1. Pièce `O` (carré) ✅
 - Créer un tableau 2D de 2x2 pour représenter la pièce `O`.
 - Exemple :
 [
