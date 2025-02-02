@@ -5,8 +5,8 @@
 - addCellulesInTheGrill permet d'ajouter les 200 celulles a la grille.
 */
 
+document.addEventListener('keydown', handleKeyPress);
 const gameGrid = document.getElementById('game-grid');
-let currentOrientation = 'horizontal'; 
 
 function clearPiece(piece, startX, startY)
 {
@@ -38,14 +38,33 @@ function displayPiece(piece, startX, startY, color)
 	}
 }
 
-function rotatePiece()
-{
-	if (currentOrientation === 'horizontal')
-		currentOrientation = 'vertical';
-	else 
-		currentOrientation = 'horizontal';
-}
 
+
+function handleKeyPress(event)
+{
+	clearPiece(matrix['I'][currentRotationIndex], startX, startY);
+	//displayPiece(matrix['I'][currentRotationIndex], startX, startY, 'red');
+	if (event.key === 'ArrowUp')
+	{
+		// Passage à la prochaine rotation
+		currentRotationIndex = (currentRotationIndex + 1) % matrix['I'].length;
+	}
+	displayPiece(matrix['I'][currentRotationIndex], startX, startY, 'red');
+	if (event.key === 'ArrowDown')
+	{
+		console.log('Flèche bas détectée');
+	}
+	if (event.key === 'ArrowLeft')
+	{	
+		console.log('Flèche gauche détectée');
+	}
+	if (event.key === 'ArrowRight')
+	{
+		console.log('Flèche droite détectée');
+	}
+}
+	
+				
 function addCellulesInTheGrill()
 {
 	for (let i = 0; i < 200; i++) 
