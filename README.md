@@ -89,13 +89,12 @@ Les pièces doivent pouvoir se déplacer et tourner correctement dans la grille.
 Voila une Roadmap pour implémenter les mouvements des pièces : 
 
 1. Déclarer des variables globales pour la position et la pièce active.
-2. Ajouter un écouteur pour les touches du clavier.
-3. Calculer la nouvelle position selon la touche pressée.
-4. Effacer et réafficher la pièce.
-5. Vérifier les bordures et les collisions.
-6. Implémenter la rotation de la pièce.
-7. Tester tous les mouvements.
-8. Ajouter des améliorations pour rendre le déplacement plus fluide.
+2. Gérer les déplacements des pieces via le clavier.
+3. Gerer les bordures et les collisions.
+
+7. Implémenter la rotation de la pièce.
+8. Tester tous les mouvements.
+9. Ajouter des améliorations pour rendre le déplacement plus fluide.
 
 ---
 
