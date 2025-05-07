@@ -40,8 +40,9 @@ function displayPiece(piece, startX, startY, color)
 
 function handleKeyPress(event)
 {
+	if (isFixed)
+		return; 
 	clearPiece(matrix[piece][currentRotationIndex], startX, startY);
-	//displayPiece(matrix['I'][currentRotationIndex], startX, startY, 'red');
 	if (event.key === 'ArrowUp')
 	{
 		// Passage à la prochaine rotation
