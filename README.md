@@ -34,47 +34,47 @@ Les tétrominos sont des matrices où chaque **1** représente un bloc et chaque
 - Rotation entre 4x1 (horizontale) et 1x4 (verticale). ✅  
 - Écouter la touche pour la rotation avec la flèche du haut. ✅  
 
-### **Pièce `T`** ❌  
+### **Pièce `T`** ✅   
 - Matrice :  
   ```
   [0, 1, 0]
   [1, 1, 1]
   ```
-- Implémenter les 4 rotations possibles.
+- Implémenter les 4 rotations possibles. ✅ 
 
-### **Pièce `L`** ❌  
+### **Pièce `L`** ✅  
 - Matrice :  
   ```
   [1, 0]
   [1, 0]
   [1, 1]
   ```
-- Implémenter les 4 rotations possibles.
+- Implémenter les 4 rotations possibles. ✅
 
-### **Pièce `J`** ❌  
+### **Pièce `J`** ✅  
 - Matrice :  
   ```
   [0, 1]
   [0, 1]
   [1, 1]
   ```
-- Implémenter les 4 rotations possibles.
+- Implémenter les 4 rotations possibles.✅
 
-### **Pièce `S`** ❌  
+### **Pièce `S`** ✅  
 - Matrice :  
   ```
   [0, 1, 1]
   [1, 1, 0]
   ```
-- Implémenter les 2 rotations possibles.
+- Implémenter les 2 rotations possibles. ✅
 
-### **Pièce `Z`** ❌  
+### **Pièce `Z`** ✅  
 - Matrice :  
   ```
   [1, 1, 0]
   [0, 1, 1]
   ```
-- Implémenter les 2 rotations possibles.
+- Implémenter les 2 rotations possibles. ✅
 
 ---
 

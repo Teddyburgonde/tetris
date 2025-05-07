@@ -38,18 +38,16 @@ function displayPiece(piece, startX, startY, color)
 	}
 }
 
-
-
 function handleKeyPress(event)
 {
-	clearPiece(matrix['I'][currentRotationIndex], startX, startY);
+	clearPiece(matrix[piece][currentRotationIndex], startX, startY);
 	//displayPiece(matrix['I'][currentRotationIndex], startX, startY, 'red');
 	if (event.key === 'ArrowUp')
 	{
 		// Passage à la prochaine rotation
-		currentRotationIndex = (currentRotationIndex + 1) % matrix['I'].length;
+		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
 	}
-	displayPiece(matrix['I'][currentRotationIndex], startX, startY, 'red');
+	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
 	if (event.key === 'ArrowDown')
 	{
 		console.log('Flèche bas détectée');
