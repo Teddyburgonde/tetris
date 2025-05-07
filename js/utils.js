@@ -42,19 +42,19 @@ function handleKeyPress(event)
 		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
 		console.log('Flèche du haut détectée');
 	}
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
 	if (event.key === 'ArrowDown')
 	{
-		console.log('Flèche bas détectée');
+		startY++;
 	}
 	if (event.key === 'ArrowLeft')
 	{	
-		console.log('Flèche gauche détectée');
+		startX--; 
 	}
 	if (event.key === 'ArrowRight')
 	{
-		console.log('Flèche droite détectée');
+		startX++;
 	}
+	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
 }
 	
 				
