@@ -1,10 +1,3 @@
-/* Il y a 4 fonctiopns dans ce fichier : 
-- clearPiece permet d'effacer une piece 
-- displayPiece permet d'afficher une piece 
-- rotatePiece permet de faire une rotation de la piece
-- addCellulesInTheGrill permet d'ajouter les 200 celulles a la grille.
-*/
-
 document.addEventListener('keydown', handleKeyPress);
 const gameGrid = document.getElementById('game-grid');
 
@@ -47,6 +40,7 @@ function handleKeyPress(event)
 	{
 		// Passage à la prochaine rotation
 		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
+		console.log('Flèche du haut détectée');
 	}
 	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
 	if (event.key === 'ArrowDown')
