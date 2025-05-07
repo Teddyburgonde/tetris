@@ -1,3 +1,6 @@
+# 📦 Projet Tetris – Progression & Fonctionnalités
+
+
 # **Étapes pour réaliser le projet Tetris en JavaScript**
 
 ---
@@ -14,7 +17,7 @@
 - Appliquer du style avec CSS pour rendre la grille visuellement similaire à celle du Tetris.
 
 ---
-## **3. Définir les pièces (tétrominos)**
+## **3. Définir les pièces (tétrominos)** ✅
 
 Les tétrominos sont des matrices où chaque **1** représente un bloc et chaque **0** un espace vide. Chaque pièce peut avoir plusieurs rotations.
 
@@ -98,17 +101,18 @@ Voila une Roadmap pour implémenter les mouvements des pièces :
 
 ---
 
-## **5. Générer aléatoirement les pièces** ❌
+## **5. Générer aléatoirement les pièces** ✅
 
-- Créer un système pour générer les pièces aléatoirement.
-- Assurer une distribution équilibrée des pièces.
+- Créer un système pour générer les pièces aléatoirement. ✅
+- Assurer une distribution équilibrée des pièces. ✅
 
 ---
 
-## **6. Gérer les collisions** ❌  
+## **6. Gérer les collisions** ✅  
 
-- Vérifier si une pièce entre en collision avec le bas de la grille ou avec d’autres pièces.
-- Bloquer la pièce et en générer une nouvelle en cas de collision.
+- Collision avec le bas de la grille ✅
+- Collision avec les autres pièces (grid).✅ 
+- Bloquer la pièce et en générer une nouvelle en cas de collision. ✅
 
 ---
 
