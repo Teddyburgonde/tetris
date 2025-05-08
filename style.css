@@ -19,3 +19,31 @@
     background-color: #222;
     border: 1px solid #444;
 }
+
+.flash {
+	background-color: orange !important;
+	transition: background-color 0.2s ease;
+}
+
+.star {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	background-color: white;
+	border-radius: 50%;
+	box-shadow: 0 0 8px yellow;
+	animation: sparkle 0.5s ease-out forwards;
+	pointer-events: none;
+	z-index: 1000;
+}
+
+@keyframes sparkle {
+	from {
+		transform: scale(1);
+		opacity: 1;
+	}
+	to {
+		transform: scale(2.5);
+		opacity: 0;
+	}
+}

@@ -85,19 +85,9 @@ Les tétrominos sont des matrices où chaque **1** représente un bloc et chaque
 
 Les pièces doivent pouvoir se déplacer et tourner correctement dans la grille.
 
-- Gérer les déplacements horizontaux (gauche/droite) avec les flèches du clavier. ❌
+- Gérer les déplacements horizontaux (gauche/droite) avec les flèches du clavier. ✅
 - Implémenter la rotation avec la flèche du haut. ✅
-- Gérer la chute rapide avec la flèche du bas et la chute instantanée avec la barre d’espace. ❌
-
-Voila une Roadmap pour implémenter les mouvements des pièces : 
-
-1. Déclarer des variables globales pour la position et la pièce active.
-2. Gérer les déplacements des pieces via le clavier.
-3. Gerer les bordures et les collisions.
-
-7. Implémenter la rotation de la pièce.
-8. Tester tous les mouvements.
-9. Ajouter des améliorations pour rendre le déplacement plus fluide.
+- Gérer la chute rapide avec la flèche du bas et la chute instantanée avec la barre d’espace. ✅
 
 ---
 

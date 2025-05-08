@@ -1,6 +1,6 @@
 addCellulesInTheGrill();
 
-let piece = 'L'
+let piece = 'O'
 let isFixed = false;
 const cells = document.querySelectorAll('.cell')
 let startX = 3; // Position départ, X c'est les colonnes

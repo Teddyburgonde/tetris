@@ -21,7 +21,8 @@ function hasCollisionBelow(pieceMatrix, startX, startY, grid)
 
 function generateNewPiece() 
 {
-	const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
+	// const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
+	const pieces = ['O', 'O', 'O', 'O', 'O', 'O', 'O'];
 	const randomIndex = Math.floor(Math.random() * pieces.length);
 	piece = pieces[randomIndex];
 	startX = 3;
@@ -31,13 +32,28 @@ function generateNewPiece()
 	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
 }  
 
+function updateGridDisplay()
+{
+	for (let y = 0; y < 20; y++) 
+	{
+		for (let x = 0; x < 10; x++) 
+		{
+			const index = y * 10 + x;
+			if (grid[y][x] === 1)
+				cells[index].style.backgroundColor = 'red'
+			else
+				cells[index].style.backgroundColor = '';
+		}
+	}
+}
+
 function dropPiece()
 {
 	// Récupère la matrice correspondant à la rotation actuelle de la pièce
 	const pieceMatrix = matrix[piece][currentRotationIndex];
-
+	
 	let lastActiveRow = 0;
-
+	
 	// Parcourt toute la pièce pour trouver la ligne la plus basse avec un bloc actif (1)
 	for(let j = 0; j < pieceMatrix.length; j++)
 	{
@@ -63,6 +79,9 @@ function dropPiece()
 					grid[startY + j][startX + i] = 1;
 			}
 	    }
+		clearFullLines();
+		clearPiece(matrix[piece][currentRotationIndex], startX, startY); // efface visuellement la piece
+		updateGridDisplay(); 
 		generateNewPiece();
 		return;
 	}
