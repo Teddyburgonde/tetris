@@ -6,9 +6,13 @@
 	<link rel="stylesheet" href="style.css">
 	<title>Document</title>
 </head>
-<body> 
+<body>
+	<div id="score">Score : 0</div>
 	<div id="container">
 		<div id="game-grid"></div>
+		<div id="game-over" style="display:none; position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); background:#222; color:white; padding:20px; border-radius:8px; font-size:20px;">
+			🎮 Game Over 😢<br><br><button onclick="location.reload()">Rejouer</button>
+		 </div>		  
 	</div>
 	<script src="js/utils.js"></script>
 	<script src="js/dropPiece.js"></script>

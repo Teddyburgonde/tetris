@@ -1,6 +1,7 @@
 document.addEventListener('keydown', handleKeyPress);
 const gameGrid = document.getElementById('game-grid');
 
+
 function clearFullLines()
 {
 	const linesToClear = [];
@@ -18,7 +19,7 @@ function clearFullLines()
 			}
 		}
 	}
-			// Supprime la ligne après une courte animation
+	// Supprime la ligne après une courte animation
 	if (linesToClear.length > 0)
 	{
 		setTimeout(() =>
@@ -62,8 +63,9 @@ function clearFullLines()
 					}, 500);
 				}
 			}
+			updateScore(linesToClear.length * 100);
 		}, 200);
-	} 
+	}
 }
 
 function canMoveTo(newX, newY)

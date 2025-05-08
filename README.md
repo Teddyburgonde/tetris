@@ -81,7 +81,7 @@ Les tétrominos sont des matrices où chaque **1** représente un bloc et chaque
 
 ---
 
-## **4. Implémenter les mouvements des pièces**
+## **4. Implémenter les mouvements des pièces** ✅
 
 Les pièces doivent pouvoir se déplacer et tourner correctement dans la grille.
 
@@ -106,21 +106,21 @@ Les pièces doivent pouvoir se déplacer et tourner correctement dans la grille.
 
 ---
 
-## **7. Supprimer les lignes complètes** ❌  
-- Vérifier si une ligne est complètement remplie.
-- Supprimer la ligne et décaler les lignes supérieures vers le bas.
+## **7. Supprimer les lignes complètes** ✅  
+- Vérifier si une ligne est complètement remplie. ✅
+- Supprimer la ligne et décaler les lignes supérieures vers le bas. ✅
 
 ---
 
-## **8. Ajouter un mode multijoueur (optionnel)** ❌  
+## **8. Ajouter un mode multijoueur** ❌  
 - Configurer un serveur **Node.js** avec **Socket.IO** pour synchroniser les joueurs.
 - Gérer les lignes de pénalité entre joueurs.
 
 ---
 
-## **9. Implémenter la logique de fin de jeu** ❌  
-- Détecter la fin de partie lorsqu’aucune pièce ne peut plus être placée.
-- Déclarer le dernier joueur en lice comme gagnant.
+## **9. Implémenter la logique de fin de jeu** ✅ 
+- Détecter la fin de partie lorsqu’aucune pièce ne peut plus être placée. ✅
+- Afficher un message personnalisé avec bouton "Rejouer". ✅ 
 
 ---
 
@@ -130,18 +130,18 @@ Les pièces doivent pouvoir se déplacer et tourner correctement dans la grille.
 
 ---
 
-## **11. Optimiser et peaufiner l’interface utilisateur** ❌  
-- Ajouter des informations comme le score, le niveau et les lignes supprimées.
-- Améliorer le style visuel.
+## **11. Optimiser et peaufiner l’interface utilisateur** ✅  
+- Ajouter des informations comme le score ✅ 
+- Améliorer le style visuel.✅
 
 ---
 
-## **12. Tester et déboguer** ❌  
-- Tester le jeu en solo et en multijoueur.
-- Corriger les bugs et optimiser les performances.
+## **12. Tester et déboguer** ❌ 
+- Tester le jeu en solo. ✅  
+- Tester en multijoueur. ❌  
 
 ---
 
 ## **13. Bonus (optionnel)** ❌  
-- Ajouter un système de score et de sauvegarde.
-- Implémenter des modes de jeu spéciaux (pièces invisibles, vitesse accrue, etc.).
+- song ? https://www.youtube.com/watch?v=Gs2ocwf8gaM ❌
+

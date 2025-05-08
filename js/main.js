@@ -1,3 +1,11 @@
+
+let score = 0;
+function updateScore(points) 
+{
+	score += points;
+	document.getElementById("score").textContent = `Score : ${score}`;
+}
+
 addCellulesInTheGrill();
 
 let piece = 'O'
