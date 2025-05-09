@@ -21,8 +21,8 @@ function hasCollisionBelow(pieceMatrix, startX, startY, grid)
 
 function generateNewPiece() 
 {
-	// const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
-	const pieces = ['O', 'O', 'O', 'O', 'O', 'O', 'O'];
+	const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
+	//const pieces = ['O', 'O', 'O', 'O', 'O', 'O', 'O'];
 	const randomIndex = Math.floor(Math.random() * pieces.length);
 	const pieceMatrix = matrix[piece][currentRotationIndex]; 
 	piece = pieces[randomIndex];
