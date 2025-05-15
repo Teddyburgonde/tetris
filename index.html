@@ -9,10 +9,22 @@
 <body>
 	<div id="score">Score : 0</div>
 	<div id="container">
-		<div id="game-grid"></div>
+
+
+		<div>
+			<h3>Me</h3>
+			<div id="game-grid"></div>
+		</div>
+
+
+		<div>
+			<h3>opponent</h3>
+			<div id="opponent-grid"></div>
+		</div>
+
 		<div id="game-over" style="display:none; position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); background:#222; color:white; padding:20px; border-radius:8px; font-size:20px;">
 			🎮 Game Over 😢<br><br><button onclick="location.reload()">Rejouer</button>
-		 </div>		  
+		</div>		  
 	</div>
 
 	<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>

@@ -190,3 +190,8 @@ function addCellulesInTheGrill()
 		gameGrid.appendChild(cell);
 	}
 }
+
+// function addCellsToOpponentGrid()
+//{
+
+// }
