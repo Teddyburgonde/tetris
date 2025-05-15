@@ -19,26 +19,27 @@ function hasCollisionBelow(pieceMatrix, startX, startY, grid)
 }
 
 
-function generateNewPiece() 
-{
-	const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
-	//const pieces = ['O', 'O', 'O', 'O', 'O', 'O', 'O'];
-	const randomIndex = Math.floor(Math.random() * pieces.length);
-	const pieceMatrix = matrix[piece][currentRotationIndex]; 
-	piece = pieces[randomIndex];
-	startX = 3;
-	startY = 0;
-	currentRotationIndex = 0;
-	isFixed = false;
+// function generateNewPiece() 
+// {
+// 	const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
+// 	//const pieces = ['O', 'O', 'O', 'O', 'O', 'O', 'O'];
+// 	const randomIndex = Math.floor(Math.random() * pieces.length);
+// 	const pieceMatrix = matrix[piece][currentRotationIndex]; 
+// 	piece = pieces[randomIndex];
+// 	startX = 3;
+// 	startY = 0;
+// 	currentRotationIndex = 0;
+// 	isFixed = false;
 
-	if (!canMoveTo(startX, startY, pieceMatrix, grid)) 
-	{
-		document.getElementById("game-over").style.display = "block";
-		clearInterval(gameLoop);
-		return;
-	}
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
-}  
+// 	if (!canMoveTo(startX, startY, pieceMatrix, grid)) 
+// 	{
+// 		document.getElementById("game-over").style.display = "block";
+// 		clearInterval(gameLoop);
+// 		return;
+// 	}
+// 	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
+// } 
+
 
 function updateGridDisplay()
 {
@@ -90,7 +91,12 @@ function dropPiece()
 		clearFullLines();
 		clearPiece(matrix[piece][currentRotationIndex], startX, startY); // efface visuellement la piece
 		updateGridDisplay(); 
-		generateNewPiece();
+		piece = listOfPiece.shift();
+		startX = 3;
+		startY = 0;
+		currentRotationIndex = 0;
+		isFixed = false;
+		displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
 		return;
 	}
 	clearPiece(matrix[piece][currentRotationIndex], startX, startY);
