@@ -131,7 +131,6 @@ function handleKeyPress(event)
 	{
 		// Passage à la prochaine rotation
 		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
-		console.log('Flèche du haut détectée');
 	}
 	if (event.key === ' ')
 	{
@@ -153,6 +152,31 @@ function handleKeyPress(event)
 		if (canMoveTo(startX + 1, startY))
 		startX++;
 	}
+	if (event.key === 'w')
+	{
+		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
+	}
+	if (event.key === '1')
+	{
+		while (canMoveTo(startX, startY + 1))
+			startY++;
+	}
+	if (event.key === 's')
+	{
+		if (canMoveTo(startX, startY + 1))
+			startY++;
+	}
+	if (event.key === 'a')
+	{
+		if (canMoveTo(startX - 1, startY))
+			startX--; 
+	}
+	if (event.key === 'd')
+	{
+		if (canMoveTo(startX + 1, startY))
+		startX++;
+	}
+	socket.emit("playerAction", { key: event.key });
 	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
 }
 	

@@ -40,6 +40,11 @@ io.on("connection", (socket) => {
     io.emit("startGame", { sequence });
   }
 
+  socket.on("playerAction", ({ key }) => {
+  console.log(`Joueur ${socket.id} a pressé ${key}`);
+  socket.broadcast.emit("updateOtherPlayer", { key, id: socket.id });
+});
+
   socket.on("disconnect", () => {
     console.log("A player disconnected:", socket.id);
     delete players[socket.id];
