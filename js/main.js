@@ -13,7 +13,11 @@ let gameLoop;
 
 
 addCellulesInTheGrill();
-const cells = document.querySelectorAll('.cell');
+addCellsToOpponentGrid();
+
+const gameCells = document.querySelectorAll('#game-grid .cell');
+const opponentCells = document.querySelectorAll('#opponent-grid .cell');
+
 let grid = Array.from({ length: 20 }, () => Array(10).fill(0));
 
 function updateScore(points) {
@@ -23,16 +27,34 @@ function updateScore(points) {
 
 // Réception de la séquence et démarrage
 socket.on("startGame", (gameData) => {
-
 	gameStarted = true;
 	listOfPiece = gameData.sequence;
 
-	piece = listOfPiece.shift();
+	piece = gameData.firstPiece;
 	startX = 3;
 	startY = 0;
 	currentRotationIndex = 0;
 	isFixed = false;
 
+	players[socket.id] = {
+		grid: Array.from({ length: 20 }, () => Array(10).fill(0)),
+		piece: piece,
+		x: startX,
+		y: startY,
+		rotation: currentRotationIndex
+	};
+
+	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
+	gameLoop = setInterval(dropPiece, 500);
+});
+
+
+socket.on("newPiece", ({ piece: newPiece }) => {
+	piece = newPiece;
+	startX = 3;
+	startY = 0;
+	currentRotationIndex = 0;
+	isFixed = false;
 	// initialisation et sauvegarde
 	players[socket.id] = {
 
@@ -41,29 +63,62 @@ socket.on("startGame", (gameData) => {
 	x: startX,
 	y: startY,
 	rotation: currentRotationIndex
-};
-
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
-	gameLoop = setInterval(dropPiece, 500);
+	};
+	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
+	socket.emit("playerAction", {
+		key: "newPiece",
+		id: socket.id,
+		piece: piece
+	});
 });
 
 // initialisation et sauvegarde les datas de l'adversaires
-socket.on("updateOtherPlayer", ({ key, id }) => {
-	if (!players[id]) 
+socket.on("updateOtherPlayer", ({ key, id, piece }) => {
+	console.log("🎯 Reçu :", key, piece, id);
+	if (key === "newPiece") 
 	{
-		console.log(`Nouvel adversaire connecté : ${id}`);
-		players[id] = {
+		if (!players[id]) 
+		{
+			console.log("🎯 Reçu :", key, piece, id);
+			players[id] = {
+			grid: Array.from({ length: 20 }, () => Array(10).fill(0)),
+	
+			x: 3,
 
-		grid: Array.from({ length: 20 }, () => Array(10).fill(0)),
+			y: 0,
 
-		piece: null,
+			rotation: 0,
+			piece: piece 
+			};
+		}
+		else
+		{
+			clearPiece(
+				matrix[players[id].piece][players[id].rotation],
+				players[id].x,
+				players[id].y,
+				opponentCells
+			);
+			players[id].piece = piece;
+			players[id].x = 3;
+			players[id].y = 0;
+			players[id].rotation = 0;
+		}
+		const newMatrix = matrix[players[id].piece][players[id].rotation];
+		displayPiece(newMatrix, players[id].x, players[id].y, 'blue', opponentCells);
+		return ;
+	}
 
-		x: 3,
+	if (!players[id] || !players[id].piece) 
+		return;
 
-		y: 0,
+	const player = players[id];
+	const currentMatrix = matrix[player.piece][player.rotation];
 
-		rotation: 0
-		};
+	if (key !== "newPiece") 
+	{
+		const currentMatrix = matrix[player.piece][player.rotation];
+		clearPiece(currentMatrix, player.x, player.y, opponentCells);
 	}
 	if (key === 'w' && players[id].piece)
 		players[id].rotation = (players[id].rotation + 1) % matrix[players[id].piece].length;
@@ -87,5 +142,7 @@ socket.on("updateOtherPlayer", ({ key, id }) => {
 		if (canMoveTo(players[id].x + 1, players[id].y))
 			players[id].x++;
 	}
+	const newMatrix = matrix[player.piece][player.rotation];
+	displayPiece(newMatrix, player.x, player.y, 'blue', opponentCells);
 });
 

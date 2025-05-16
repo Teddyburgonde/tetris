@@ -15,7 +15,7 @@ function clearFullLines()
 			for (let x = 0; x < 10; x++) 
 			{
 				const index = i * 10 + x;
-				cells[index].classList.add('flash');
+				gameCells[index].classList.add('flash');
 			}
 		}
 	}
@@ -37,7 +37,7 @@ function clearFullLines()
 				for (let x = 0; x < 10; x++) 
 				{
 					const index = i * 10 + x;
-					cells[index].classList.remove('flash');
+					gameCells[index].classList.remove('flash');
 				}
 			}
 
@@ -92,7 +92,7 @@ function canMoveTo(newX, newY)
 	return true;
 }
 
-function clearPiece(piece, startX, startY)
+function clearPiece(piece, startX, startY, cells)
 {
     for (let j = 0; j < piece.length; ++j) 
 	{
@@ -107,7 +107,7 @@ function clearPiece(piece, startX, startY)
 	}
 }
 
-function displayPiece(piece, startX, startY, color)
+function displayPiece(piece, startX, startY, color, cells)
 {
 	for (let j = 0; j < piece.length; ++j)
 	{
@@ -124,9 +124,11 @@ function displayPiece(piece, startX, startY, color)
 
 function handleKeyPress(event)
 {
+	if (!piece) 
+		return;
 	if (isFixed)
 		return; 
-	clearPiece(matrix[piece][currentRotationIndex], startX, startY);
+	clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells);
 	if (event.key === 'ArrowUp')
 	{
 		// Passage à la prochaine rotation
@@ -134,22 +136,22 @@ function handleKeyPress(event)
 	}
 	if (event.key === ' ')
 	{
-		while (canMoveTo(startX, startY + 1))
+		while (canMoveTo(startX, startY + 1, grid))
 			startY++;
 	}
 	if (event.key === 'ArrowDown')
 	{
-		if (canMoveTo(startX, startY + 1))
+		if (canMoveTo(startX, startY + 1, grid))
 			startY++;
 	}
 	if (event.key === 'ArrowLeft')
 	{
-		if (canMoveTo(startX - 1, startY))
+		if (canMoveTo(startX - 1, startY, grid))
 			startX--; 
 	}
 	if (event.key === 'ArrowRight')
 	{
-		if (canMoveTo(startX + 1, startY))
+		if (canMoveTo(startX + 1, startY, grid))
 		startX++;
 	}
 	if (event.key === 'w')
@@ -158,26 +160,31 @@ function handleKeyPress(event)
 	}
 	if (event.key === '1')
 	{
-		while (canMoveTo(startX, startY + 1))
+		while (canMoveTo(startX, startY + 1, grid))
 			startY++;
 	}
 	if (event.key === 's')
 	{
-		if (canMoveTo(startX, startY + 1))
+		if (canMoveTo(startX, startY + 1, grid))
 			startY++;
 	}
 	if (event.key === 'a')
 	{
-		if (canMoveTo(startX - 1, startY))
+		if (canMoveTo(startX - 1, startY, grid))
 			startX--; 
 	}
 	if (event.key === 'd')
 	{
-		if (canMoveTo(startX + 1, startY))
-		startX++;
+		if (canMoveTo(startX + 1, startY, grid))
+			startX++;
 	}
-	socket.emit("playerAction", { key: event.key });
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
+	socket.emit("playerAction", {
+		key: event.key,
+		id: socket.id,
+		piece: piece
+	});
+	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
+
 }
 	
 				
@@ -191,7 +198,13 @@ function addCellulesInTheGrill()
 	}
 }
 
-// function addCellsToOpponentGrid()
-//{
-
-// }
+function addCellsToOpponentGrid()
+{
+	const opponentGrid = document.getElementById("opponent-grid");
+	for (let i = 0; i < 200; i++) 
+	{
+		const cell = document.createElement('div');
+		cell.classList.add('cell');
+		opponentGrid.appendChild(cell); 
+	}
+}

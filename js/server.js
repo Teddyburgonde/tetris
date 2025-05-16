@@ -13,6 +13,7 @@ const httpServer = http.createServer();
 const io = new Server(httpServer, {
 	cors: {
 		origin: "*",
+    methods: ["GET", "POST"]
 	},
 });
 
@@ -37,13 +38,31 @@ io.on("connection", (socket) => {
   if (!gameStarted && Object.keys(players).length >= 2) {
     gameStarted = true;
     sequence = generatePieceSequence(100);
-    io.emit("startGame", { sequence });
+
+    const firstPiece = sequence.shift();
+    io.emit("startGame", { 
+      sequence,
+      firstPiece
+    });
   }
 
-  socket.on("playerAction", ({ key }) => {
-  console.log(`Joueur ${socket.id} a pressé ${key}`);
-  socket.broadcast.emit("updateOtherPlayer", { key, id: socket.id });
+  socket.on("playerAction", ( data ) => {
+  socket.broadcast.emit("updateOtherPlayer",  data );
 });
+
+  socket.on("needNewPiece", () => {
+    const next = sequence.shift();
+    console.log(`🎁 Envoi de la pièce "${next}" à ${socket.id}`);
+
+
+    socket.emit("newPiece", { piece: next });
+
+    socket.broadcast.emit("updateOtherPlayer", {
+      key: "newPiece",
+      id: socket.id,
+      piece: next
+    });
+  });
 
   socket.on("disconnect", () => {
     console.log("A player disconnected:", socket.id);

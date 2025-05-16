@@ -18,29 +18,6 @@ function hasCollisionBelow(pieceMatrix, startX, startY, grid)
   return false;
 }
 
-
-// function generateNewPiece() 
-// {
-// 	const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
-// 	//const pieces = ['O', 'O', 'O', 'O', 'O', 'O', 'O'];
-// 	const randomIndex = Math.floor(Math.random() * pieces.length);
-// 	const pieceMatrix = matrix[piece][currentRotationIndex]; 
-// 	piece = pieces[randomIndex];
-// 	startX = 3;
-// 	startY = 0;
-// 	currentRotationIndex = 0;
-// 	isFixed = false;
-
-// 	if (!canMoveTo(startX, startY, pieceMatrix, grid)) 
-// 	{
-// 		document.getElementById("game-over").style.display = "block";
-// 		clearInterval(gameLoop);
-// 		return;
-// 	}
-// 	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
-// } 
-
-
 function updateGridDisplay()
 {
 	for (let y = 0; y < 20; y++) 
@@ -49,15 +26,17 @@ function updateGridDisplay()
 		{
 			const index = y * 10 + x;
 			if (grid[y][x] === 1)
-				cells[index].style.backgroundColor = 'red'
+				gameCells[index].style.backgroundColor = 'red';
 			else
-				cells[index].style.backgroundColor = '';
+				gameCells[index].style.backgroundColor = '';
 		}
 	}
 }
 
 function dropPiece()
 {
+	if (!piece) 
+		return; 
 	// Récupère la matrice correspondant à la rotation actuelle de la pièce
 	const pieceMatrix = matrix[piece][currentRotationIndex];
 	
@@ -89,17 +68,18 @@ function dropPiece()
 			}
 	    }
 		clearFullLines();
-		clearPiece(matrix[piece][currentRotationIndex], startX, startY); // efface visuellement la piece
+		//clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells); // efface visuellement la piece
 		updateGridDisplay(); 
-		piece = listOfPiece.shift();
-		startX = 3;
-		startY = 0;
-		currentRotationIndex = 0;
-		isFixed = false;
-		displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
+		socket.emit("needNewPiece");
+
 		return;
 	}
-	clearPiece(matrix[piece][currentRotationIndex], startX, startY);
+	clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells);
 	startY++;
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red');
+	socket.emit("playerAction", {
+		key: "s",
+		id: socket.id,
+		piece: piece
+	  });
+	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
 }
