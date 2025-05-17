@@ -29,22 +29,22 @@ function updateScore(points)
 function canMoveToForPlayer(player, x, y) 
 {
 	const pieceMatrix = matrix[player.piece][player.rotation];
-	for (let j = 0; j < pieceMatrix.length; j++) {
-		for (let i = 0; i < pieceMatrix[j].length; i++) {
-			if (pieceMatrix[j][i] === 1) {
+	for (let j = 0; j < pieceMatrix.length; j++) 
+	{
+		for (let i = 0; i < pieceMatrix[j].length; i++) 
+		{
+			if (pieceMatrix[j][i] === 1) 
+			{
 				const newY = y + j;
 				const newX = x + i;
-				if (
-					newY >= 20 || newX < 0 || newX >= 10 ||
-					player.grid[newY][newX] === 1
-				) {
+				if (newY >= 20 || newX < 0 || newX >= 10 || player.grid[newY][newX] === 1)
 					return false;
-				}
 			}
 		}
 	}
 	return true;
 }
+
 // Réception de la séquence et démarrage
 socket.on("startGame", (gameData) => {
 	gameStarted = true;
@@ -116,7 +116,8 @@ socket.on("updateOtherPlayer", ({ key, id, piece, x, y, rotation }) => {
 
 		if (key === "fix") {
 			const mat = matrix[player.piece]?.[player.rotation];
-			if (!mat) {
+			if (!mat) 
+			{
 				console.warn("❌ fix ignoré : matrix introuvable pour", player.piece, player.rotation);
 				return;
 			}
@@ -136,7 +137,8 @@ socket.on("updateOtherPlayer", ({ key, id, piece, x, y, rotation }) => {
 
 	// 🧼 Efface la pièce précédente
 	const oldMatrix = matrix[player.piece]?.[player.rotation];
-	if (!oldMatrix) {
+	if (!oldMatrix) 
+	{
 		console.warn("❌ displayPiece ignoré : matrix introuvable pour", player.piece, player.rotation);
 		return;
 	}
@@ -152,4 +154,12 @@ socket.on("updateOtherPlayer", ({ key, id, piece, x, y, rotation }) => {
 
 	// 🎮 Affiche la nouvelle pièce
 	displayPiece(oldMatrix, player.x, player.y, 'blue', opponentCells);
+});
+
+socket.on("receivePenalty", (nbLignes) => {
+	const adversaireId = Object.keys(players).find(id => id !== socket.id);
+	grid.shift();
+	for (let i = 0; i < nbLignes; ++i)
+		grid.push(Array(10).fill('P'));
+	updateGridDisplay();
 });

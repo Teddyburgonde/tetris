@@ -25,13 +25,16 @@ function updateGridDisplay()
 		for (let x = 0; x < 10; x++) 
 		{
 			const index = y * 10 + x;
-			if (grid[y][x] === 1)
+			if (grid[y][x] === 'P')
+				gameCells[index].style.backgroundColor = 'violet';
+			else if (grid[y][x] === 1)
 				gameCells[index].style.backgroundColor = 'red';
 			else
 				gameCells[index].style.backgroundColor = '';
 		}
 	}
 }
+
 function dropPiece()
 {
 	if (!piece) 
@@ -60,7 +63,9 @@ function dropPiece()
 					grid[startY + j][startX + i] = 1;
 			}
 		}
-		clearFullLines();
+		const cleared = clearFullLines();
+		if (cleared > 0)
+			socket.emit("sendPenalty");
 		updateGridDisplay();
 
 		socket.emit("playerAction", {

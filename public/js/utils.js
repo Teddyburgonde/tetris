@@ -66,6 +66,7 @@ function clearFullLines()
 			updateScore(linesToClear.length * 100);
 		}, 200);
 	}
+	return linesToClear.length;
 }
 
 
@@ -102,11 +103,10 @@ function clearPiece(piece, startX, startY, cells)
 			if (piece[j][i] === 1)
 			{
 				const index = (j + startY) * 10 + (i + startX);
-				if (cells[index]) {
+				if (cells[index])
 					cells[index].style.backgroundColor = '';
-				} else {
+				else 
 					console.warn(`❌ clearPiece ignoré : cellule introuvable à l'index ${index}`);
-				}
 			}
 		}
 	}
@@ -122,16 +122,14 @@ function displayPiece(piece, startX, startY, color, cells)
 			if (piece[j][i] === 1) 
 			{
 				const index = (j + startY) * 10 + (i + startX);
-				if (cells[index]) {
+				if (cells[index])
 					cells[index].style.backgroundColor = color;
-				} else {
+				else
 					console.warn(`❌ displayPiece ignoré : cellule introuvable à l'index ${index}`);
-				}
 			}
 		}
 	}
 }
-
 
 function handleKeyPress(event)
 {
@@ -141,10 +139,7 @@ function handleKeyPress(event)
 		return; 
 	clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells);
 	if (event.key === 'ArrowUp')
-	{
-		// Passage à la prochaine rotation
 		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
-	}
 	if (event.key === ' ')
 	{
 		while (canMoveTo(startX, startY + 1, grid))
@@ -163,12 +158,10 @@ function handleKeyPress(event)
 	if (event.key === 'ArrowRight')
 	{
 		if (canMoveTo(startX + 1, startY, grid))
-		startX++;
+			startX++;
 	}
 	if (event.key === 'w')
-	{
 		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
-	}
 	if (event.key === '1')
 	{
 		while (canMoveTo(startX, startY + 1, grid))
