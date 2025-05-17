@@ -131,6 +131,30 @@ function displayPiece(piece, startX, startY, color, cells)
 	}
 }
 
+function canRotate(piece, currentRotationIndex, startX, startY, grid)
+{
+	const nextMatrixIndex = (currentRotationIndex + 1) % matrix[piece].length;
+	const rotatedMatrix = matrix[piece][nextMatrixIndex];
+	let newX;
+	let newY;
+	for (let j = 0; j < rotatedMatrix.length; ++j)
+	{
+		for (let i = 0; i < rotatedMatrix[0].length; ++i)
+		{
+			if (rotatedMatrix[j][i] === 1)
+			{
+				newX = startX + i;
+				newY = startY + j
+				if (newX < 0 || newX >= 10)
+					return false;
+				if (grid[newY][newX] === 1 || grid[newY][newX] === 'P')
+					return false;
+			}
+		}
+	}
+	return true ;
+}
+
 function handleKeyPress(event)
 {
 	if (!piece) 
@@ -138,7 +162,7 @@ function handleKeyPress(event)
 	if (isFixed)
 		return; 
 	clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells);
-	if (event.key === 'ArrowUp')
+	if (event.key === 'ArrowUp' && canRotate(piece, currentRotationIndex, startX, startY, grid))
 		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
 	if (event.key === ' ')
 	{
@@ -160,8 +184,8 @@ function handleKeyPress(event)
 		if (canMoveTo(startX + 1, startY, grid))
 			startX++;
 	}
-	if (event.key === 'w')
-		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
+	if (event.key === 'w' && canRotate(piece, currentRotationIndex, startX, startY, grid))
+    	currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
 	if (event.key === '1')
 	{
 		while (canMoveTo(startX, startY + 1, grid))

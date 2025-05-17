@@ -7,15 +7,16 @@ function hasCollisionBelow(pieceMatrix, startX, startY, grid)
 			// Calcule la position (x, y) sur la grille si la pièce descend d'une case
 			const newY = startY + j + 1;
 			const newX = startX + i;
+
 			if (pieceMatrix[j][i] === 1)
 			{
-			// Si on sort de la grille OU si la case est déjà occupée dans grid
-			if (newY >= 20 || grid[newY][newX] === 1)
-			  return true; // collision détectée
+				// Si on sort de la grille OU si la case est déjà occupée dans grid
+				if (newY >= 20 || grid[newY][newX] === 1 || grid[newY][newX] === 'P')
+			  		return true; // collision détectée
 			}
 		}
-  }
-  return false;
+	}
+	return false;
 }
 
 function updateGridDisplay()
