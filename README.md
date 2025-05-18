@@ -3,6 +3,19 @@
 
 # **Étapes pour réaliser le projet Tetris en JavaScript**
 
+
+# **Lancer le multijouer**
+
+```c
+
+PC1
+node server.js
+puis double clique sur index.html
+
+PC2
+double clique sur index.html
+
+
 ---
 
 ## **1. Définir la structure de base du projet** ✅  
@@ -112,9 +125,9 @@ Les pièces doivent pouvoir se déplacer et tourner correctement dans la grille.
 
 ---
 
-## **8. Ajouter un mode multijoueur** ❌  
-- Configurer un serveur **Node.js** avec **Socket.IO** pour synchroniser les joueurs.
-- Gérer les lignes de pénalité entre joueurs.
+## **8. Ajouter un mode multijoueur** ✅  
+- Configurer un serveur **Node.js** avec **Socket.IO** pour synchroniser les joueurs. ✅  
+- Gérer les lignes de pénalité entre joueurs. ✅  
 
 ---
 
@@ -124,13 +137,8 @@ Les pièces doivent pouvoir se déplacer et tourner correctement dans la grille.
 
 ---
 
-## **10. Ajouter des tests unitaires** ❌  
-- Écrire des tests pour couvrir au moins 70 % des lignes de code.
-- Utiliser des outils comme **Jest** ou **Mocha**.
 
----
-
-## **11. Optimiser et peaufiner l’interface utilisateur** ✅  
+## **10. Optimiser et peaufiner l’interface utilisateur** ✅  
 - Ajouter des informations comme le score ✅ 
 - Améliorer le style visuel.✅
 
