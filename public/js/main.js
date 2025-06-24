@@ -1,5 +1,5 @@
-//const socket = io("http://10.12.7.1:3000");
-const socket = io(`http://${window.location.hostname}:3000`);
+const socket = io("http://10.11.6.6:3000");
+//const socket = io(`http://${window.location.hostname}:3000`);
 
 
 const players = {};
