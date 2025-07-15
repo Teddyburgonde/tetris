@@ -1,3 +1,14 @@
+/**
+ * hasCollisionBelow - Vérifie si la pièce actuelle entrerait en collision en tombant d'une case.
+ *
+ * Teste les cases situées sous la pièce pour détecter un contact avec une autre pièce ou le bas du plateau.
+ *
+ * @param pieceMatrix Matrice représentant la forme actuelle de la pièce
+ * @param startX Position horizontale actuelle de la pièce
+ * @param startY Position verticale actuelle de la pièce
+ * @param grid Grille de jeu contenant les pièces fixées
+ * @return true si collision détectée, false sinon
+ */
 function hasCollisionBelow(pieceMatrix, startX, startY, grid)
 {
 	for (let j = 0; j < pieceMatrix.length; j++)
@@ -19,6 +30,12 @@ function hasCollisionBelow(pieceMatrix, startX, startY, grid)
 	return false;
 }
 
+/**
+ * updateGridDisplay - Met à jour l'affichage visuel de la grille de jeu.
+ *
+ * Applique une couleur à chaque cellule selon son contenu : violet pour une pièce mobile,
+ * rouge pour une pièce fixée, vide sinon.
+ */
 function updateGridDisplay()
 {
 	for (let y = 0; y < 20; y++) 
@@ -36,6 +53,12 @@ function updateGridDisplay()
 	}
 }
 
+/**
+ * dropPiece - Gère la descente automatique de la pièce actuelle.
+ *
+ * Si une collision ou le bas de la grille est atteint, la pièce est fixée, les lignes pleines
+ * sont supprimées, et une nouvelle pièce est demandée. Sinon, la pièce descend d'une case.
+ */
 function dropPiece()
 {
 	if (!piece) 

@@ -1,7 +1,14 @@
 document.addEventListener('keydown', handleKeyPress);
 const gameGrid = document.getElementById('game-grid');
 
-
+/**
+ * clearFullLines - Supprime toutes les lignes complètes de la grille.
+ *
+ * Les lignes entièrement remplies sont supprimées avec une animation visuelle,
+ * des étoiles sont affichées, et le score est mis à jour.
+ *
+ * @return Le nombre de lignes supprimées
+ */
 function clearFullLines()
 {
 	const linesToClear = [];
@@ -69,7 +76,15 @@ function clearFullLines()
 	return linesToClear.length;
 }
 
-
+/**
+ * canMoveTo - Vérifie si la pièce actuelle peut être déplacée aux coordonnées spécifiées.
+ *
+ * S'assure que la pièce ne sort pas de la grille et n'entre pas en collision avec des pièces fixées.
+ *
+ * @param newX Nouvelle position horizontale
+ * @param newY Nouvelle position verticale
+ * @return true si le mouvement est valide, false sinon
+ */
 function canMoveTo(newX, newY)
 {
 	const pieceMatrix = matrix[piece][currentRotationIndex];
@@ -94,6 +109,16 @@ function canMoveTo(newX, newY)
 	return true;
 }
 
+/**
+ * clearPiece - Efface l'affichage d'une pièce sur la grille.
+ *
+ * Supprime la couleur d'une pièce temporaire à une position donnée pour permettre son déplacement.
+ *
+ * @param piece Matrice de la pièce
+ * @param startX Position horizontale de départ
+ * @param startY Position verticale de départ
+ * @param cells Liste des cellules DOM à modifier
+ */
 function clearPiece(piece, startX, startY, cells)
 {
     for (let j = 0; j < piece.length; ++j) 
@@ -112,7 +137,17 @@ function clearPiece(piece, startX, startY, cells)
 	}
 }
 
-
+/**
+ * displayPiece - Affiche une pièce sur la grille à une position donnée.
+ *
+ * Colore les cellules DOM en fonction de la matrice de la pièce et de la couleur donnée.
+ *
+ * @param piece Matrice de la pièce
+ * @param startX Position horizontale
+ * @param startY Position verticale
+ * @param color Couleur à appliquer
+ * @param cells Liste des cellules DOM à colorer
+ */
 function displayPiece(piece, startX, startY, color, cells)
 {
 	for (let j = 0; j < piece.length; ++j)
@@ -131,6 +166,18 @@ function displayPiece(piece, startX, startY, color, cells)
 	}
 }
 
+/**
+ * canRotate - Vérifie si une rotation de la pièce est possible.
+ *
+ * Simule la rotation et vérifie qu'elle n'entraîne pas de collision ni de sortie de la grille.
+ *
+ * @param piece Nom de la pièce
+ * @param currentRotationIndex Index de la rotation actuelle
+ * @param startX Position horizontale
+ * @param startY Position verticale
+ * @param grid Grille de jeu
+ * @return true si la rotation est possible, false sinon
+ */
 function canRotate(piece, currentRotationIndex, startX, startY, grid)
 {
 	const nextMatrixIndex = (currentRotationIndex + 1) % matrix[piece].length;
@@ -155,6 +202,14 @@ function canRotate(piece, currentRotationIndex, startX, startY, grid)
 	return true ;
 }
 
+/**
+ * handleKeyPress - Gère les déplacements et rotations via le clavier.
+ *
+ * Interprète les touches directionnelles, espace, ou ZQSD pour bouger ou faire tourner la pièce,
+ * et synchronise l’action avec le serveur.
+ *
+ * @param event Événement clavier capturé
+ */
 function handleKeyPress(event)
 {
 	if (!piece) 
@@ -215,7 +270,11 @@ function handleKeyPress(event)
 
 }
 	
-				
+/**
+ * addCellulesInTheGrill - Génère les 200 cellules de la grille principale du joueur.
+ *
+ * Chaque cellule est un `div` avec la classe 'cell', ajoutée dans le DOM.
+ */			
 function addCellulesInTheGrill()
 {
 	for (let i = 0; i < 200; i++) 
@@ -226,6 +285,11 @@ function addCellulesInTheGrill()
 	}
 }
 
+/**
+ * addCellsToOpponentGrid - Génère les 200 cellules de la grille de l’adversaire.
+ *
+ * Chaque cellule est un `div` avec la classe 'cell', ajoutée au conteneur de la grille adverse.
+ */
 function addCellsToOpponentGrid()
 {
 	const opponentGrid = document.getElementById("opponent-grid");

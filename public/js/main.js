@@ -21,13 +21,29 @@ const opponentCells = document.querySelectorAll('#opponent-grid .cell');
 
 let grid = Array.from({ length: 20 }, () => Array(10).fill(0));
 
+/**
+ * updateScore - Incrémente et affiche le score actuel.
+ *
+ * Le score est augmenté selon le nombre de lignes supprimées ou les actions du joueur.
+ *
+ * @param points Nombre de points à ajouter au score
+ */
 function updateScore(points) 
 {
 	score += points;
 	document.getElementById("score").textContent = `Score : ${score}`;
 }
 
-
+/**
+ * canMoveToForPlayer - Vérifie si un joueur peut déplacer sa pièce à une position donnée.
+ *
+ * Utilisé pour simuler les mouvements du joueur adverse sans collisions ou sortie de la grille.
+ *
+ * @param player Objet contenant les données de la pièce et de la grille du joueur
+ * @param x Position horizontale souhaitée
+ * @param y Position verticale souhaitée
+ * @return true si le déplacement est possible, false sinon
+ */
 function canMoveToForPlayer(player, x, y) 
 {
 	const pieceMatrix = matrix[player.piece][player.rotation];
