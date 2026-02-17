@@ -1,29 +1,42 @@
 /**
  * hasCollisionBelow - Vérifie si la pièce actuelle entrerait en collision en tombant d'une case.
  *
- * Teste les cases situées sous la pièce pour détecter un contact avec une autre pièce ou le bas du plateau.
+ * Cette fonction pure teste les cases situées sous la pièce pour détecter un contact 
+ * avec un obstacle ou le dépassement des limites de la grille.
  *
- * @param pieceMatrix Matrice représentant la forme actuelle de la pièce
- * @param startX Position horizontale actuelle de la pièce
- * @param startY Position verticale actuelle de la pièce
- * @param grid Grille de jeu contenant les pièces fixées
- * @return true si collision détectée, false sinon
+ * @param {Array<Array<number>>} pieceMatrix - Matrice représentant la forme de la pièce.
+ * @param {number} currentCol - Colonne actuelle de la pièce dans la grille.
+ * @param {number} currentRow - Ligne actuelle de la pièce dans la grille.
+ * @param {Array<Array<number|string>>} grid - Grille de jeu (état actuel des blocs fixés).
+ * @param {number} gridWidth - Largeur totale de la grille (nombre de colonnes).
+ * @param {number} gridHeight - Hauteur totale de la grille (nombre de lignes).
+ * @return {boolean} - true si une collision est détectée, false sinon.
  */
-function hasCollisionBelow(pieceMatrix, startX, startY, grid)
+function hasCollisionBelow(pieceMatrix, currentCol, currentRow, grid, gridWidth, gridHeight)
 {
 	for (let j = 0; j < pieceMatrix.length; j++)
 	{
 		for (let i = 0; i < pieceMatrix[j].length; i++)
 		{
-			// Calcule la position (x, y) sur la grille si la pièce descend d'une case
-			const newY = startY + j + 1;
-			const newX = startX + i;
+			// Calcule la position exacte de la case qu'on veut tester
+			const rowToCheck = currentRow + j + 1;
+			const colToCheck = currentCol + i;
 
 			if (pieceMatrix[j][i] === 1)
 			{
-				// Si on sort de la grille OU si la case est déjà occupée dans grid
-				if (newY >= 20 || grid[newY][newX] === 1 || grid[newY][newX] === 'P')
-			  		return true; // collision détectée
+				// Vérification des limites de la grille (murs et sol)
+				const isOutsideHeight = rowToCheck >= gridHeight;
+				const isOutsideWidth = colToCheck < 0 || colToCheck >= gridWidth;
+
+				if (isOutsideHeight || isOutsideWidth)
+					return true;
+
+				// Vérification des obstacles (blocs déjà posés ou pénalités)
+				const cellOccupied = grid[rowToCheck][colToCheck] === 1;
+				const isPenaltyBlock = grid[rowToCheck][colToCheck] === 'P';
+
+				if (cellOccupied || isPenaltyBlock)
+					return true;
 			}
 		}
 	}
