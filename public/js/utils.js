@@ -122,7 +122,6 @@ function canPieceMoveTo(pieceName, RotationIndex, targetCol, targetRow, grid, ma
 }
 
 
-
 /**
  * Identifie les indices de toutes les lignes complètes dans la grille.
  * Une ligne est considérée comme complète si chaque cellule est occupée (1 ou 'P').
@@ -142,18 +141,27 @@ function findFullLines(grid)
 }
 
 
-// JE SUIS ICI 
-
 /**
  * Génère une nouvelle grille après avoir supprimé les lignes complètes.
  * Ajoute le nombre exact de lignes vides nécessaires au sommet.
- */
+ * On garde que les lignes qui ne sont pas pleines.
+ * On calcule combien de lignes il manque pour revenir à 20
+ * On prépare les nouvelles lignes vides pour le haut
+ * On fusionne les deux tableaux 
+*/
 function getNewGrid(grid, fullLinesIndices, gridWidth)
 {
-    // Logique à implémenter...
+	const remainingRows = grid.filter((row, index) => !fullLinesIndices.includes(index));
+
+	const nbLinesToAdd = fullLinesIndices.length;
+
+	const emptyLines = new Array(nbLinesToAdd).fill(null).map(() => new Array(gridWidth).fill(0));
+
+	return [...emptyLines, ...remainingRows];
 }
 
 
+// JE SUIS ICI 
 
 /**
  * Applique ou retire la classe CSS 'flash' sur les cellules concernées.
@@ -179,7 +187,6 @@ function handleLinesClear(player)
 {
 	// Logique à implémenter...
 }
-
 
 
 
