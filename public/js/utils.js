@@ -19,52 +19,71 @@ function updateGridDisplay(grid, gameCells, gridWidth, gridHeight)
 }
 
 
-
-
-
-
-
-// A EFFACER !!!!!!!!!
-
 /**
- * canRotate - Vérifie si une rotation de la pièce est possible.
- *
- * Simule la rotation et vérifie qu'elle n'entraîne pas de collision ni de sortie de la grille.
- *
- * @param piece Nom de la pièce
- * @param currentRotationIndex Index de la rotation actuelle
- * @param startX Position horizontale
- * @param startY Position verticale
- * @param grid Grille de jeu
- * @return true si la rotation est possible, false sinon
+ * Vérifie si la rotation est possible sans collision ni sortie de grille.
+ * Simule la pièce dans sa future position de rotation.
  */
-function canRotate(piece, currentRotationIndex, startX, startY, grid)
+function canRotate(piece, currentRotationIndex,  currentCol, currentRow, grid, matrix, gridWidth, gridHeight)
 {
-	const nextMatrixIndex = (currentRotationIndex + 1) % matrix[piece].length;
-	const rotatedMatrix = matrix[piece][nextMatrixIndex];
-	let newX;
-	let newY;
-	for (let j = 0; j < rotatedMatrix.length; ++j)
-	{
-		for (let i = 0; i < rotatedMatrix[0].length; ++i)
-		{
+	// On calcule l'index de la rotation suivante
+    const nextRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
+    const rotatedMatrix = matrix[piece][nextRotationIndex];
+
+	// On parcours la futur forme pour tester chaque bloc
+	for (let j = 0; j < rotatedMatrix.length; j++)
+    {
+        for (let i = 0; i < rotatedMatrix[j].length; i++)
+        {	
 			if (rotatedMatrix[j][i] === 1)
 			{
-				newX = startX + i;
-				newY = startY + j
-				if (newX < 0 || newX >= 10)
+				const nextCol  = currentCol + i;
+				const nextRow = currentRow + j;
+
+				// Vérification des limites de la grille
+				if (nextCol < 0 || nextCol >= gridWidth || nextRow >= gridHeight)
 					return false;
-				if (grid[newY][newX] === 1 || grid[newY][newX] === 'P')
+				// Vérification des collisions
+				if (nextRow >= 0 && (grid[nextRow][nextCol] === 1 || grid[nextRow][nextCol] === 'P'))
 					return false;
 			}
+		
 		}
 	}
-	return true ;
+	return true;
 }
 
 
 
 
+// JE SUIS ICI 
+
+/**
+ * clearPiece - Efface l'affichage d'une pièce sur la grille.
+ *
+ * Supprime la couleur d'une pièce temporaire à une position donnée pour permettre son déplacement.
+ *
+ * @param piece Matrice de la pièce
+ * @param startX Position horizontale de départ
+ * @param startY Position verticale de départ
+ * @param cells Liste des cellules DOM à modifier
+ */
+function clearPiece(piece, startX, startY, cells)
+{
+    for (let j = 0; j < piece.length; ++j) 
+	{
+		for (let i = 0; i < piece[j].length; ++i) 
+		{
+			if (piece[j][i] === 1)
+			{
+				const index = (j + startY) * 10 + (i + startX);
+				if (cells[index])
+					cells[index].style.backgroundColor = '';
+				else 
+					console.warn(`❌ clearPiece ignoré : cellule introuvable à l'index ${index}`);
+			}
+		}
+	}
+}
 
 
 
@@ -155,33 +174,7 @@ function clearFullLines()
 }
 
 
-/**
- * clearPiece - Efface l'affichage d'une pièce sur la grille.
- *
- * Supprime la couleur d'une pièce temporaire à une position donnée pour permettre son déplacement.
- *
- * @param piece Matrice de la pièce
- * @param startX Position horizontale de départ
- * @param startY Position verticale de départ
- * @param cells Liste des cellules DOM à modifier
- */
-function clearPiece(piece, startX, startY, cells)
-{
-    for (let j = 0; j < piece.length; ++j) 
-	{
-		for (let i = 0; i < piece[j].length; ++i) 
-		{
-			if (piece[j][i] === 1)
-			{
-				const index = (j + startY) * 10 + (i + startX);
-				if (cells[index])
-					cells[index].style.backgroundColor = '';
-				else 
-					console.warn(`❌ clearPiece ignoré : cellule introuvable à l'index ${index}`);
-			}
-		}
-	}
-}
+
 
 /**
  * displayPiece - Affiche une pièce sur la grille à une position donnée.
