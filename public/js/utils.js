@@ -75,11 +75,11 @@ function clearPiece(piece, currentCol, currentRow, gameCells, gridWidth)
 }
 
 
-
-
-
-// JE SUIS ICI 
-function displayPiece(piece, startX, startY, color, cells)
+/**
+ * Affiche visuellement la pièce sur la grille en appliquant la couleur aux cellules.
+ * Calcule l'index des cellules cibles en fonction de la position (col, row) et de la largeur de la grille.
+ */
+function displayPiece(piece, currentCol, currentRow, gameCells, gridWidth, color)
 {
 	for (let j = 0; j < piece.length; ++j)
 	{
@@ -87,11 +87,9 @@ function displayPiece(piece, startX, startY, color, cells)
 		{
 			if (piece[j][i] === 1) 
 			{
-				const index = (j + startY) * 10 + (i + startX);
-				if (cells[index])
-					cells[index].style.backgroundColor = color;
-				else
-					console.warn(`❌ displayPiece ignoré : cellule introuvable à l'index ${index}`);
+				const cellId = (j + currentRow) * gridWidth + (i + currentCol);
+				if (gameCells[cellId])
+					gameCells[cellId].style.backgroundColor = color;
 			}
 		}
 	}
