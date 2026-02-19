@@ -34,34 +34,6 @@ function updateScore(points)
 	document.getElementById("score").textContent = `Score : ${score}`;
 }
 
-/**
- * canMoveToForPlayer - Vérifie si un joueur peut déplacer sa pièce à une position donnée.
- *
- * Utilisé pour simuler les mouvements du joueur adverse sans collisions ou sortie de la grille.
- *
- * @param player Objet contenant les données de la pièce et de la grille du joueur
- * @param x Position horizontale souhaitée
- * @param y Position verticale souhaitée
- * @return true si le déplacement est possible, false sinon
- */
-function canMoveToForPlayer(player, x, y) 
-{
-	const pieceMatrix = matrix[player.piece][player.rotation];
-	for (let j = 0; j < pieceMatrix.length; j++) 
-	{
-		for (let i = 0; i < pieceMatrix[j].length; i++) 
-		{
-			if (pieceMatrix[j][i] === 1) 
-			{
-				const newY = y + j;
-				const newX = x + i;
-				if (newY >= 20 || newX < 0 || newX >= 10 || player.grid[newY][newX] === 1)
-					return false;
-			}
-		}
-	}
-	return true;
-}
 
 // Réception de la séquence et démarrage
 socket.on("startGame", (gameData) => {

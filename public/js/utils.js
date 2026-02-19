@@ -96,47 +96,94 @@ function displayPiece(piece, currentCol, currentRow, gameCells, gridWidth, color
 }
 
 
+/**
+ * Vérifie si la pièce peut se déplacer vers une position cible (col, row).
+ * Analyse les collisions avec les bords de la grille (10x20) et les blocs fixés ou pénalités.
+ */
+function canPieceMoveTo(pieceName, RotationIndex, targetCol, targetRow, grid, matrix, gridWidth, gridHeight)
+{
+	const pieceMatrix = matrix[pieceName][RotationIndex];
+	for (let j = 0; j < pieceMatrix.length; j++) 
+	{
+		for (let i = 0; i < pieceMatrix[j].length; i++) 
+		{
+			if (pieceMatrix[j][i] === 1) 
+			{
+				const newRow = targetRow + j;
+				const newCol = targetCol + i;
+				if (newCol < 0 || newCol >= gridWidth || newRow >= gridHeight)
+					return false;
+				if (newRow >= 0 && (grid[newRow][newCol] === 1 || grid[newRow][newCol] === 'P'))
+                    return false;
+			}
+		}
+	}
+	return true;
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-document.addEventListener('keydown', handleKeyPress);
-const gameGrid = document.getElementById('game-grid');
 
 /**
- * clearFullLines - Supprime toutes les lignes complètes de la grille.
- *
- * Les lignes entièrement remplies sont supprimées avec une animation visuelle,
- * des étoiles sont affichées, et le score est mis à jour.
- *
- * @return Le nombre de lignes supprimées
+ * Identifie les indices de toutes les lignes complètes dans la grille.
+ * Une ligne est considérée comme complète si chaque cellule est occupée (1 ou 'P').
  */
+function findFullLines(grid)
+{
+	const linesToClear = [];
+
+	for (let i = 0; i < grid.length; ++i)
+	{
+		if (grid[i].every(cell => cell === 1 || cell === 'P'))
+		{
+			linesToClear.push(i);
+		}
+	}
+	return linesToClear;
+}
+
+
+// JE SUIS ICI 
+
+/**
+ * Génère une nouvelle grille après avoir supprimé les lignes complètes.
+ * Ajoute le nombre exact de lignes vides nécessaires au sommet.
+ */
+function getNewGrid(grid, fullLinesIndices, gridWidth)
+{
+    // Logique à implémenter...
+}
+
+
+
+/**
+ * Applique ou retire la classe CSS 'flash' sur les cellules concernées.
+ */
+function toggleLineFlash(fullLinesIndices, gameCells, gridWidth, isAdding)
+{
+	// Logique à implémenter...
+}
+
+/**
+ * Crée et anime les étoiles de victoire aux positions des lignes supprimées.
+ */
+function spawnVictoryStars(fullLinesIndices, gridRect)
+{
+	// Logique à implémenter...
+}
+
+/**
+ * Gère l'enchaînement : Flash -> Attente -> Mise à jour Grille -> Stars.
+ * C'est elle qui appellera les fonctions pures ci-dessus.
+ */
+function handleLinesClear(player)
+{
+	// Logique à implémenter...
+}
+
+
+
+
+
 function clearFullLines()
 {
 	const linesToClear = [];
@@ -206,7 +253,8 @@ function clearFullLines()
 
 
 
-
+document.addEventListener('keydown', handleKeyPress);
+const gameGrid = document.getElementById('game-grid');
 
 
 
