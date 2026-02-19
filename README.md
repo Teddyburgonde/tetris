@@ -41,6 +41,3 @@ Ce projet suit des règles de développement strictes pour garantir la qualité 
 2.  **Lancer le client** :
     - Ouvrez `index.html` dans votre navigateur.
     -Pour rejoindre une partie spécifique : `http://<ip>:<port>/#<room>[<player_name>]`.
-
-
----*Projet réalisé mbirou/tebandam.*
