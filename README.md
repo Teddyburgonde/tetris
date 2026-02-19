@@ -1,6 +1,8 @@
 # 🔴 Red Tetris – Networked Multiplayer
 
-## 📖 Présentation du Projet**Red Tetris** est un jeu de puzzle multijoueur en ligne développé dans le cadre d'un projet Full Stack JavaScript.L'objectif est de construire une application performante permettant à plusieurs joueurs de s'affronter simultanément dans des sessions synchronisées.
+## 📖 Présentation du Projet**Red Tetris**
+C'est un jeu de puzzle multijoueur en ligne développé dans le cadre d'un projet Full Stack JavaScript.
+L'objectif est de construire une application performante permettant à plusieurs joueurs de s'affronter simultanément dans des sessions synchronisées.
 Le projet repose sur une architecture client/serveur utilisant **Node.js** pour le backend et un frontend moderne, communiquant via le protocole **Socket.io**.
 
 ## 🛠️ Concepts & Contraintes Techniques
