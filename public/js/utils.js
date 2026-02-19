@@ -53,37 +53,70 @@ function canRotate(piece, currentRotationIndex,  currentCol, currentRow, grid, m
 }
 
 
-
-
-// JE SUIS ICI 
-
 /**
- * clearPiece - Efface l'affichage d'une pièce sur la grille.
- *
- * Supprime la couleur d'une pièce temporaire à une position donnée pour permettre son déplacement.
- *
- * @param piece Matrice de la pièce
- * @param startX Position horizontale de départ
- * @param startY Position verticale de départ
- * @param cells Liste des cellules DOM à modifier
+ * Efface visuellement la pièce de la grille en réinitialisant la couleur des cellules.
+ * Utilise les coordonnées et la largeur de la grille pour cibler les bons éléments du DOM.
  */
-function clearPiece(piece, startX, startY, cells)
+function clearPiece(piece, currentCol, currentRow, gameCells, gridWidth)
 {
-    for (let j = 0; j < piece.length; ++j) 
+	for (let j = 0; j < piece.length; ++j) 
 	{
 		for (let i = 0; i < piece[j].length; ++i) 
 		{
 			if (piece[j][i] === 1)
 			{
+				const cellId = (j + currentRow) * gridWidth + (i + currentCol);
+
+				if (gameCells[cellId])
+					gameCells[cellId].style.backgroundColor = '';
+			}		
+		}
+	}
+}
+
+
+
+
+
+// JE SUIS ICI 
+function displayPiece(piece, startX, startY, color, cells)
+{
+	for (let j = 0; j < piece.length; ++j)
+	{
+		for (let i = 0; i < piece[j].length; ++i) 
+		{
+			if (piece[j][i] === 1) 
+			{
 				const index = (j + startY) * 10 + (i + startX);
 				if (cells[index])
-					cells[index].style.backgroundColor = '';
-				else 
-					console.warn(`❌ clearPiece ignoré : cellule introuvable à l'index ${index}`);
+					cells[index].style.backgroundColor = color;
+				else
+					console.warn(`❌ displayPiece ignoré : cellule introuvable à l'index ${index}`);
 			}
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -176,34 +209,6 @@ function clearFullLines()
 
 
 
-/**
- * displayPiece - Affiche une pièce sur la grille à une position donnée.
- *
- * Colore les cellules DOM en fonction de la matrice de la pièce et de la couleur donnée.
- *
- * @param piece Matrice de la pièce
- * @param startX Position horizontale
- * @param startY Position verticale
- * @param color Couleur à appliquer
- * @param cells Liste des cellules DOM à colorer
- */
-function displayPiece(piece, startX, startY, color, cells)
-{
-	for (let j = 0; j < piece.length; ++j)
-	{
-		for (let i = 0; i < piece[j].length; ++i) 
-		{
-			if (piece[j][i] === 1) 
-			{
-				const index = (j + startY) * 10 + (i + startX);
-				if (cells[index])
-					cells[index].style.backgroundColor = color;
-				else
-					console.warn(`❌ displayPiece ignoré : cellule introuvable à l'index ${index}`);
-			}
-		}
-	}
-}
 
 
 
