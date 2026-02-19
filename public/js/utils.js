@@ -161,15 +161,78 @@ function getNewGrid(grid, fullLinesIndices, gridWidth)
 }
 
 
-// JE SUIS ICI 
-
 /**
  * Applique ou retire la classe CSS 'flash' sur les cellules concernées.
  */
 function toggleLineFlash(fullLinesIndices, gameCells, gridWidth, isAdding)
 {
 	// Logique à implémenter...
+	for (let i = 0; i < fullLinesIndices.length; i++)
+	{
+		// La premiere case de la ligne
+		const cellIndexStart = fullLinesIndices[i] * gridWidth;
+
+		for (let j = 0; j < gridWidth; j++)
+		{
+			const currentCell = gameCells[cellIndexStart + j];
+			if (isAdding === true)
+				currentCell.classList.add('flash');
+			else
+				currentCell.classList.remove('flash');
+		}
+	}
 }
+
+// JE SUIS ICI 
+
+
+// const gridRect = document.getElementById('game-grid').getBoundingClientRect();
+// 			for (const i of linesToClear)
+// 			{
+// 				for (let n = 0; n < 5; n++) // 5 étoiles par ligne
+// 				{
+// 					const star = document.createElement('div');
+// 					star.classList.add('star');
+
+// 					// Position approximative dans la zone du #game-grid
+// 					const x = gridRect.left + Math.random() * gridRect.width;
+// 					const y = gridRect.top + i * (gridRect.height / 20) + Math.random() * 30;
+
+// 					star.style.left = `${x}px`;
+// 					star.style.top = `${y}px`;
+
+// 					document.getElementById('container').appendChild(star);
+// 					// Supprimer l'étoile après l'animation
+// 					setTimeout(() => {
+// 						star.remove();
+// 					}, 500);
+// 				}
+// 			}
+
+// FONCTION spawnVictoryStars(indicesLignesPleines, conteneurGrilleHtml)
+
+//     POUR CHAQUE indexLigne DANS indicesLignesPleines :
+        
+//         BOUCLER 10 fois (pour créer 10 étoiles par ligne) :
+            
+//             1. CRÉER un élément HTML <div>
+//             2. AJOUTER la classe CSS 'star' à cet élément
+            
+//             3. CALCULER la position verticale (Y) :
+//                y = (indexLigne * 30)  // 30 est la hauteur d'une cellule en pixels
+            
+//             4. CALCULER la position horizontale (X) :
+//                x = Aléatoire entre 0 et la largeur de la grille (300px)
+            
+//             5. APPLIQUER ces positions au style de l'élément (left et top)
+            
+//             6. AJOUTER l'élément dans conteneurGrilleHtml
+            
+//             7. PROGRAMMER la suppression de l'élément après 800ms (avec setTimeout)
+
+// FIN FONCTION
+
+
 
 /**
  * Crée et anime les étoiles de victoire aux positions des lignes supprimées.
@@ -177,7 +240,14 @@ function toggleLineFlash(fullLinesIndices, gameCells, gridWidth, isAdding)
 function spawnVictoryStars(fullLinesIndices, gridRect)
 {
 	// Logique à implémenter...
+
+
 }
+
+
+
+
+
 
 /**
  * Gère l'enchaînement : Flash -> Attente -> Mise à jour Grille -> Stars.
@@ -187,6 +257,24 @@ function handleLinesClear(player)
 {
 	// Logique à implémenter...
 }
+
+
+
+
+
+
+
+
+
+
+
+	// grid.splice(i, 1); // supprime la ligne
+	// grid.unshift(new Array(10).fill(0)); // ajoute une nouvelle ligne en haut
+
+
+
+
+
 
 
 
