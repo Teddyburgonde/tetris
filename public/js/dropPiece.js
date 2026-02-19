@@ -4,7 +4,7 @@
  * Cette fonction pure teste les cases situées sous la pièce pour détecter un contact 
  * avec un obstacle ou le dépassement des limites de la grille.
  *
- * @param {Array<Array<number>>} pieceMatrix - Matrice représentant la forme de la pièce.
+ * @param {Array<Array<number>>} pieceShape - Matrice représentant la forme de la pièce.
  * @param {number} currentCol - Colonne actuelle de la pièce dans la grille.
  * @param {number} currentRow - Ligne actuelle de la pièce dans la grille.
  * @param {Array<Array<number|string>>} grid - Grille de jeu (état actuel des blocs fixés).
@@ -12,17 +12,17 @@
  * @param {number} gridHeight - Hauteur totale de la grille (nombre de lignes).
  * @return {boolean} - true si une collision est détectée, false sinon.
  */
-function hasCollisionBelow(pieceMatrix, currentCol, currentRow, grid, gridWidth, gridHeight)
+function hasCollisionBelow(pieceShape, currentCol, currentRow, grid, gridWidth, gridHeight)
 {
-	for (let j = 0; j < pieceMatrix.length; j++)
+	for (let j = 0; j < pieceShape.length; j++)
 	{
-		for (let i = 0; i < pieceMatrix[j].length; i++)
+		for (let i = 0; i < pieceShape[j].length; i++)
 		{
 			// Calcule la position exacte de la case qu'on veut tester
 			const rowToCheck = currentRow + j + 1;
 			const colToCheck = currentCol + i;
 
-			if (pieceMatrix[j][i] === 1)
+			if (pieceShape[j][i] === 1)
 			{
 				// Vérification des limites de la grille (murs et sol)
 				const isOutsideHeight = rowToCheck >= gridHeight;
@@ -44,90 +44,105 @@ function hasCollisionBelow(pieceMatrix, currentCol, currentRow, grid, gridWidth,
 }
 
 /**
- * updateGridDisplay - Met à jour l'affichage visuel de la grille de jeu.
- *
- * Applique une couleur à chaque cellule selon son contenu : violet pour une pièce mobile,
- * rouge pour une pièce fixée, vide sinon.
+ * Parcourt chaque case de la grille de données pour mettre à jour la couleur 
+ * des carrés HTML correspondants (blocs fixés, pénalités ou vide).
  */
-function updateGridDisplay()
+function ColorCellsInGrid(grid, gridWidth, gridHeight, cells)
 {
-	for (let y = 0; y < 20; y++) 
+	for (let j = 0; j < gridHeight; j++)
 	{
-		for (let x = 0; x < 10; x++) 
+		for (let i = 0; i < gridWidth; i++)
 		{
-			const index = y * 10 + x;
-			if (grid[y][x] === 'P')
-				gameCells[index].style.backgroundColor = 'violet';
-			else if (grid[y][x] === 1)
-				gameCells[index].style.backgroundColor = 'red';
+			const cellId = j * gridWidth + i;
+			if (grid[j][i] === 1)
+				cells[cellId].style.backgroundColor = 'red';
+			else if (grid[j][i] === 'P')
+				cells[cellId].style.backgroundColor = 'violet';
 			else
-				gameCells[index].style.backgroundColor = '';
+				cells[cellId].style.backgroundColor = '';
 		}
 	}
 }
 
 /**
- * dropPiece - Gère la descente automatique de la pièce actuelle.
- *
- * Si une collision ou le bas de la grille est atteint, la pièce est fixée, les lignes pleines
- * sont supprimées, et une nouvelle pièce est demandée. Sinon, la pièce descend d'une case.
+ * Calcule l'état suivant de la pièce : soit elle continue sa chute, 
+ * soit elle doit être verrouillée sur la grille en cas de collision.
  */
-function dropPiece()
+function dropPiece(piece, currentRotationIndex, currentCol, currentRow, grid)
 {
-	if (!piece) 
-		return;
+	if (!piece)
+		return null;
 
-	const pieceMatrix = matrix[piece][currentRotationIndex];
+	const pieceShape = matrix[piece][currentRotationIndex];
+	
+	// On vérifie s'il y a un obstacle en dessous
+	const collision = hasCollisionBelow(pieceShape, currentCol, currentRow, grid);
 
-	let lastActiveRow = 0;
-	for (let j = 0; j < pieceMatrix.length; j++) 
+	if (collision == true)
+		return { action: 'LOCK', col: currentCol, row: currentRow, shape: shape };
+	else
+		return { action: 'DROP', col: currentCol, row: currentRow + 1 };
+}
+
+
+/**
+ * Met à jour le jeu (grille, affichage, réseau) après un mouvement.
+ * Retourne null si la pièce se bloque, ou sa nouvelle position si elle descend.
+ */
+function handlePieceAction(result, piece, currentRotationIndex, currentCol, currentRow, grid, gameCells, matrix)
+{
+	if (!result) 
+		return null;
+
+	if (result.action === 'LOCK') 
 	{
-		for (let i = 0; i < pieceMatrix[j].length; i++) 
-			if (pieceMatrix[j][i] === 1) 
-				lastActiveRow = j;
-	}
-	const atBottom = startY + lastActiveRow + 1 >= 20;
-	const collision = hasCollisionBelow(pieceMatrix, startX, startY, grid);
-
-	if (atBottom || collision)
-	{
-		isFixed = true;
-		for (let j = 0; j < pieceMatrix.length; j++) 
+		for (let j = 0; j < result.shape.length; j++) 
 		{
-			for (let i = 0; i < pieceMatrix[j].length; i++) 
+    		for (let i = 0; i < result.shape[j].length; i++) 
 			{
-				if (pieceMatrix[j][i] === 1)
-					grid[startY + j][startX + i] = 1;
+				if (result.shape[j][i] === 1)
+					grid[result.row + j][result.col + i] = 1;
 			}
 		}
+		updateGridDisplay();
 		const cleared = clearFullLines();
 		if (cleared > 0)
 			socket.emit("sendPenalty");
-		updateGridDisplay();
 
-		socket.emit("playerAction", {
+        // 4. socket.emit("playerAction", { key: "fix", ... }) pour les autres
+        socket.emit("playerAction", {
 			key: "fix",
 			id: socket.id,
 			piece: piece,
-			x: startX,
-			y: startY,
+			x: result.col,
+			y: result.row,
 			rotation: currentRotationIndex
 		});
 
 		socket.emit("needNewPiece");
-		piece = null;
-		return;
-	}
+		
+		return null;
+	} 
+    else if (result.action === 'DROP') 
+	{
+		const pieceShape = matrix[piece][currentRotationIndex];
+        clearPiece(pieceShape, currentCol, currentRow, gameCells);
+		
+		const newRow = result.row;
 
-	clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells);
-	startY++;
-	socket.emit("playerAction", {
-		key: "s",
-		id: socket.id,
-		piece: piece,
-		x: startX,
-		y: startY,
-		rotation: currentRotationIndex
-	});
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
+		socket.emit("playerAction", {
+			key: "s",
+			id: socket.id,
+			piece: piece,
+			x: result.col,
+			y: newRow,
+			rotation: currentRotationIndex
+		});
+
+		displayPiece(pieceShape, result.col, result.row, 'red', gameCells);
+		
+		// Nouvelles coordonneées
+		return { x: result.col, y: newRow };
+    }
+	return piece;
 }

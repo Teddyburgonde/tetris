@@ -1,3 +1,81 @@
+/**
+ * Synchronise l'état visuel du DOM avec les données de la grille.
+ * Parcourt chaque coordonnée pour colorer ou vider les cellules correspondantes.
+ */
+function updateGridDisplay(grid, gameCells, gridWidth, gridHeight) 
+{
+	for (let y = 0; y < gridHeight; y++) 
+	{
+		for (let x = 0; x < gridWidth; x++) 
+		{
+			const cellId = 	y * gridWidth + x;
+
+			if (grid[y][x] === 1)
+				gameCells[cellId].style.backgroundColor = 'blue';
+			else
+				gameCells[cellId].style.backgroundColor = '';
+		}
+	}
+}
+
+
+
+
+
+
+
+// A EFFACER !!!!!!!!!
+
+/**
+ * canRotate - Vérifie si une rotation de la pièce est possible.
+ *
+ * Simule la rotation et vérifie qu'elle n'entraîne pas de collision ni de sortie de la grille.
+ *
+ * @param piece Nom de la pièce
+ * @param currentRotationIndex Index de la rotation actuelle
+ * @param startX Position horizontale
+ * @param startY Position verticale
+ * @param grid Grille de jeu
+ * @return true si la rotation est possible, false sinon
+ */
+function canRotate(piece, currentRotationIndex, startX, startY, grid)
+{
+	const nextMatrixIndex = (currentRotationIndex + 1) % matrix[piece].length;
+	const rotatedMatrix = matrix[piece][nextMatrixIndex];
+	let newX;
+	let newY;
+	for (let j = 0; j < rotatedMatrix.length; ++j)
+	{
+		for (let i = 0; i < rotatedMatrix[0].length; ++i)
+		{
+			if (rotatedMatrix[j][i] === 1)
+			{
+				newX = startX + i;
+				newY = startY + j
+				if (newX < 0 || newX >= 10)
+					return false;
+				if (grid[newY][newX] === 1 || grid[newY][newX] === 'P')
+					return false;
+			}
+		}
+	}
+	return true ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 document.addEventListener('keydown', handleKeyPress);
 const gameGrid = document.getElementById('game-grid');
 
@@ -76,38 +154,6 @@ function clearFullLines()
 	return linesToClear.length;
 }
 
-/**
- * canMoveTo - Vérifie si la pièce actuelle peut être déplacée aux coordonnées spécifiées.
- *
- * S'assure que la pièce ne sort pas de la grille et n'entre pas en collision avec des pièces fixées.
- *
- * @param newX Nouvelle position horizontale
- * @param newY Nouvelle position verticale
- * @return true si le mouvement est valide, false sinon
- */
-function canMoveTo(newX, newY)
-{
-	const pieceMatrix = matrix[piece][currentRotationIndex];
-
-	for (let j = 0; j < pieceMatrix.length; ++j)
-	{
-		for (let i = 0; i < pieceMatrix[j].length; ++i)
-		{
-			if (pieceMatrix[j][i] === 1)
-			{
-				const x = newX + i;
-				const y = newY + j;
-				if (x < 0 || x >= 10)
-					return false;
-				if (y < 0 || y >= 20)
-					return false;
-				if (grid[y][x] === 1)
-					return false; 
-			}
-		}
-	}
-	return true;
-}
 
 /**
  * clearPiece - Efface l'affichage d'une pièce sur la grille.
@@ -166,41 +212,7 @@ function displayPiece(piece, startX, startY, color, cells)
 	}
 }
 
-/**
- * canRotate - Vérifie si une rotation de la pièce est possible.
- *
- * Simule la rotation et vérifie qu'elle n'entraîne pas de collision ni de sortie de la grille.
- *
- * @param piece Nom de la pièce
- * @param currentRotationIndex Index de la rotation actuelle
- * @param startX Position horizontale
- * @param startY Position verticale
- * @param grid Grille de jeu
- * @return true si la rotation est possible, false sinon
- */
-function canRotate(piece, currentRotationIndex, startX, startY, grid)
-{
-	const nextMatrixIndex = (currentRotationIndex + 1) % matrix[piece].length;
-	const rotatedMatrix = matrix[piece][nextMatrixIndex];
-	let newX;
-	let newY;
-	for (let j = 0; j < rotatedMatrix.length; ++j)
-	{
-		for (let i = 0; i < rotatedMatrix[0].length; ++i)
-		{
-			if (rotatedMatrix[j][i] === 1)
-			{
-				newX = startX + i;
-				newY = startY + j
-				if (newX < 0 || newX >= 10)
-					return false;
-				if (grid[newY][newX] === 1 || grid[newY][newX] === 'P')
-					return false;
-			}
-		}
-	}
-	return true ;
-}
+
 
 /**
  * handleKeyPress - Gère les déplacements et rotations via le clavier.
