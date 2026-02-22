@@ -187,7 +187,7 @@ function toggleLineFlash(fullLinesIndices, gameCells, gridWidth, isAdding)
 /**
  * Crée et anime les étoiles de victoire aux positions des lignes supprimées.
  */
-function spawnVictoryStars(fullLinesIndices, gridRect)
+function spawnVictoryStars(fullLinesIndices)
 {
 	const container = document.getElementById('game-grid');
 	if (!container)
@@ -217,110 +217,40 @@ function spawnVictoryStars(fullLinesIndices, gridRect)
 
 
 
+/**
+ * Gère l'enchaînement : Flash & Stars simultanés -> Attente -> Mise à jour Grille & Score.
+ */
+async function handleLinesClear(grid, player, cells, gridWidth, gridHeight, socket)
+{
+	const fullLines = findFullLines(grid);
+	const isAdding = false;
+
+	const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+	if (fullLines.length > 0)
+	{
+		// Animation 
+		toggleLineFlash(fullLines, cells, gridWidth, true);
+		spawnVictoryStars(fullLines);
+		
+		await delay(1000);
+		
+		toggleLineFlash(fullLines, cells, gridWidth, false);
+
+		const nextGrid = getNewGrid(grid, fullLines);
+		const nbLignesMatch = fullLines.length;
+		
+		// Pénalité
+		if (nbLignesMatch > 1)
+		{
+			socket.emit("sendPenalty", nbLignesMatch - 1);
+		}
+		updateGridDisplay(nextGrid, cells, gridWidth, gridHeight);
+		return nextGrid;
+	}
+	return grid;
+}
 
 // JE SUIS ICI 
-
-/**
- * Gère l'enchaînement : Flash -> Attente -> Mise à jour Grille -> Stars.
- */
-function handleLinesClear(player)
-{
-	// Logique à implémenter...
-}
-
-
-
-
-
-
-
-
-
-
-
-	// grid.splice(i, 1); // supprime la ligne
-	// grid.unshift(new Array(10).fill(0)); // ajoute une nouvelle ligne en haut
-
-
-
-
-
-
-
-
-
-function clearFullLines()
-{
-	const linesToClear = [];
-
-	// identification des lignes pleines
-	for (let i = 0; i < grid.length; ++i)
-	{
-		if (grid[i].every(cell => cell === 1))
-		{
-			linesToClear.push(i); // stocker l'indice 
-			for (let x = 0; x < 10; x++) 
-			{
-				const index = i * 10 + x;
-				gameCells[index].classList.add('flash');
-			}
-		}
-	}
-	// Supprime la ligne après une courte animation
-	if (linesToClear.length > 0)
-	{
-		setTimeout(() =>
-		{
-			for (const i of linesToClear)
-			{
-				grid.splice(i, 1); // supprime la ligne
-				grid.unshift(new Array(10).fill(0)); // ajoute une nouvelle ligne en haut
-			}
-			updateGridDisplay();
-
-			// Retire la classe flash après animation
-			for (const i of linesToClear)
-			{
-				for (let x = 0; x < 10; x++) 
-				{
-					const index = i * 10 + x;
-					gameCells[index].classList.remove('flash');
-				}
-			}
-
-			const gridRect = document.getElementById('game-grid').getBoundingClientRect();
-			for (const i of linesToClear)
-			{
-				for (let n = 0; n < 5; n++) // 5 étoiles par ligne
-				{
-					const star = document.createElement('div');
-					star.classList.add('star');
-
-					// Position approximative dans la zone du #game-grid
-					const x = gridRect.left + Math.random() * gridRect.width;
-					const y = gridRect.top + i * (gridRect.height / 20) + Math.random() * 30;
-
-					star.style.left = `${x}px`;
-					star.style.top = `${y}px`;
-
-					document.getElementById('container').appendChild(star);
-					// Supprimer l'étoile après l'animation
-					setTimeout(() => {
-						star.remove();
-					}, 500);
-				}
-			}
-			updateScore(linesToClear.length * 100);
-		}, 200);
-	}
-	return linesToClear.length;
-}
-
-
-
-document.addEventListener('keydown', handleKeyPress);
-const gameGrid = document.getElementById('game-grid');
-
 
 
 /**
@@ -418,6 +348,10 @@ function addCellsToOpponentGrid()
 	{
 		const cell = document.createElement('div');
 		cell.classList.add('cell');
-		opponentGrid.appendChild(cell); 
+		opponentGrid.appendChild(cell);
 	}
 }
+
+
+	// grid.splice(i, 1); // supprime la ligne
+	// grid.unshift(new Array(10).fill(0)); // ajoute une nouvelle ligne en haut
