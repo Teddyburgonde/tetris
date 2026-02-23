@@ -252,6 +252,40 @@ async function handleLinesClear(grid, player, cells, gridWidth, gridHeight, sock
 
 // JE SUIS ICI 
 
+function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFixed, grid, pieces, gridWidth, gridHeight)
+{
+	if (!piece || isFixed === true)
+		return null;
+	let newCol = currentCol;
+	let newRow = currentRow;
+	let newRotationIndex = rotationIndex;
+
+	const checkCanRotate = canRotate(piece, currentRotationIndex,  currentCol, currentRow, grid, matrix, gridWidth, gridHeight)
+	switch (key) 
+	{
+		case 'ArrowUp':
+		case 'w':
+			if (canRotate(piece, rotationIndex, currentCol, currentCol, grid, pieces, gridWidth, gridHeight))
+				newRotationIndex = (rotationIndex + 1) % pieces[piece].length;
+			break;
+		
+
+
+		default
+	}
+}			
+
+
+
+// SELON key :
+//   'ArrowUp' ou 'w'         → SI canRotate(...) : newRotationIndex = (rotationIndex + 1) % ...
+//   'ArrowDown' ou 's'       → SI canPieceMoveTo(newCol, newRow + 1, ...) : newRow++
+//   'ArrowLeft' ou 'a'       → SI canPieceMoveTo(newCol - 1, newRow, ...) : newCol--
+//   'ArrowRight' ou 'd'      → SI canPieceMoveTo(newCol + 1, newRow, ...) : newCol++
+//   ' ' ou '1'               → TANT QUE canPieceMoveTo(newCol, newRow + 1, ...) : newRow++
+
+// retourner { rotationIndex: newRotationIndex, col: newCol, row: newRow }
+
 
 /**
  * handleKeyPress - Gère les déplacements et rotations via le clavier.
@@ -263,10 +297,10 @@ async function handleLinesClear(grid, player, cells, gridWidth, gridHeight, sock
  */
 function handleKeyPress(event)
 {
-	if (!piece) 
+	if (!piece || isFixed) 
 		return;
-	if (isFixed)
-		return; 
+
+
 	clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells);
 	if (event.key === 'ArrowUp' && canRotate(piece, currentRotationIndex, startX, startY, grid))
 		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
