@@ -250,8 +250,11 @@ async function handleLinesClear(grid, player, cells, gridWidth, gridHeight, sock
 	return grid;
 }
 
-// JE SUIS ICI 
 
+/**
+ * Calcule le nouvel état de la pièce selon la touche pressée.
+ * Retourne null si la pièce est absente ou fixée, sinon retourne { col, row, rotationIndex }.
+ */
 function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFixed, grid, pieces, gridWidth, gridHeight)
 {
 	if (!piece || isFixed === true)
@@ -260,132 +263,56 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 	let newRow = currentRow;
 	let newRotationIndex = rotationIndex;
 
-	const checkCanRotate = canRotate(piece, currentRotationIndex,  currentCol, currentRow, grid, matrix, gridWidth, gridHeight)
 	switch (key) 
 	{
+		// Chute automatique
+		case ' ':
+		case '1':
+			while (canPieceMoveTo(piece, rotationIndex, newCol, newRow + 1, grid, pieces, gridWidth, gridHeight))
+        		newRow++;
+			break;
 		case 'ArrowUp':
 		case 'w':
-			if (canRotate(piece, rotationIndex, currentCol, currentCol, grid, pieces, gridWidth, gridHeight))
+			if (canRotate(piece, rotationIndex, currentCol, currentRow, grid, pieces, gridWidth, gridHeight))
 				newRotationIndex = (rotationIndex + 1) % pieces[piece].length;
 			break;
-		
-
-
-		default
+		case 'ArrowDown':
+		case 's':
+			if (canPieceMoveTo(piece, rotationIndex, currentCol, currentRow, grid, pieces, gridWidth, gridHeight))
+				newRow = currentRow + 1;		
+			break;
+		case 'ArrowLeft':
+		case 'a':
+			if (canPieceMoveTo(piece, rotationIndex, currentCol - 1, currentRow, grid, pieces, gridWidth, gridHeight))
+				newCol = currentCol -1;
+			break;
+		case 'ArrowRight':
+		case 'd':
+			if (canPieceMoveTo(piece, rotationIndex, currentCol + 1, currentRow, grid, pieces, gridWidth, gridHeight))
+				newCol = currentCol +1;
+			break;
 	}
+	const newState = { col: newCol, row: newRow, rotationIndex: newRotationIndex };
+	return newState;
 }			
 
 
 
-// SELON key :
-//   'ArrowUp' ou 'w'         → SI canRotate(...) : newRotationIndex = (rotationIndex + 1) % ...
-//   'ArrowDown' ou 's'       → SI canPieceMoveTo(newCol, newRow + 1, ...) : newRow++
-//   'ArrowLeft' ou 'a'       → SI canPieceMoveTo(newCol - 1, newRow, ...) : newCol--
-//   'ArrowRight' ou 'd'      → SI canPieceMoveTo(newCol + 1, newRow, ...) : newCol++
-//   ' ' ou '1'               → TANT QUE canPieceMoveTo(newCol, newRow + 1, ...) : newRow++
-
-// retourner { rotationIndex: newRotationIndex, col: newCol, row: newRow }
-
-
-/**
- * handleKeyPress - Gère les déplacements et rotations via le clavier.
- *
- * Interprète les touches directionnelles, espace, ou ZQSD pour bouger ou faire tourner la pièce,
- * et synchronise l’action avec le serveur.
- *
- * @param event Événement clavier capturé
- */
-function handleKeyPress(event)
-{
-	if (!piece || isFixed) 
-		return;
-
-
-	clearPiece(matrix[piece][currentRotationIndex], startX, startY, gameCells);
-	if (event.key === 'ArrowUp' && canRotate(piece, currentRotationIndex, startX, startY, grid))
-		currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
-	if (event.key === ' ')
-	{
-		while (canMoveTo(startX, startY + 1, grid))
-			startY++;
-	}
-	if (event.key === 'ArrowDown')
-	{
-		if (canMoveTo(startX, startY + 1, grid))
-			startY++;
-	}
-	if (event.key === 'ArrowLeft')
-	{
-		if (canMoveTo(startX - 1, startY, grid))
-			startX--; 
-	}
-	if (event.key === 'ArrowRight')
-	{
-		if (canMoveTo(startX + 1, startY, grid))
-			startX++;
-	}
-	if (event.key === 'w' && canRotate(piece, currentRotationIndex, startX, startY, grid))
-    	currentRotationIndex = (currentRotationIndex + 1) % matrix[piece].length;
-	if (event.key === '1')
-	{
-		while (canMoveTo(startX, startY + 1, grid))
-			startY++;
-	}
-	if (event.key === 's')
-	{
-		if (canMoveTo(startX, startY + 1, grid))
-			startY++;
-	}
-	if (event.key === 'a')
-	{
-		if (canMoveTo(startX - 1, startY, grid))
-			startX--; 
-	}
-	if (event.key === 'd')
-	{
-		if (canMoveTo(startX + 1, startY, grid))
-			startX++;
-	}
-	socket.emit("playerAction", {
-		key: event.key,
-		id: socket.id,
-		piece: piece
-	});
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
-
-}
 	
 /**
- * addCellulesInTheGrill - Génère les 200 cellules de la grille principale du joueur.
- *
- * Chaque cellule est un `div` avec la classe 'cell', ajoutée dans le DOM.
- */			
-function addCellulesInTheGrill()
-{
-	for (let i = 0; i < 200; i++) 
-	{
-		const cell = document.createElement('div');
-		cell.classList.add('cell');
-		gameGrid.appendChild(cell);
-	}
-}
-
-/**
- * addCellsToOpponentGrid - Génère les 200 cellules de la grille de l’adversaire.
- *
- * Chaque cellule est un `div` avec la classe 'cell', ajoutée au conteneur de la grille adverse.
+ * Génère les cellules HTML d'une grille et les ajoute dans le container donné.
  */
-function addCellsToOpponentGrid()
+function addCellulesInTheGrill(container, gridWidth, gridHeight)
 {
-	const opponentGrid = document.getElementById("opponent-grid");
-	for (let i = 0; i < 200; i++) 
+	const nbCells = gridWidth * gridHeight;
+	for (let i = 0; i < nbCells; i++)
 	{
 		const cell = document.createElement('div');
 		cell.classList.add('cell');
-		opponentGrid.appendChild(cell);
+		container.appendChild(cell);
 	}
 }
 
-
+// JE SUIS ICI 
 	// grid.splice(i, 1); // supprime la ligne
 	// grid.unshift(new Array(10).fill(0)); // ajoute une nouvelle ligne en haut
