@@ -23,59 +23,117 @@ const opponentCells = document.querySelectorAll('#opponent-grid .cell');
 let grid = Array.from({ length: 20 }, () => Array(10).fill(0));
 
 /**
- * updateScore - Incrémente et affiche le score actuel.
- *
- * Le score est augmenté selon le nombre de lignes supprimées ou les actions du joueur.
- *
- * @param points Nombre de points à ajouter au score
+ * Calcule et retourne le nouveau score après ajout des points.
  */
-function updateScore(points) 
-{
-	score += points;
-	document.getElementById("score").textContent = `Score : ${score}`;
+function updateScore(points, score) 
+{	
+	return score + points;
 }
+
+/**
+ * Retourne true pour indiquer que la partie a démarré.
+ */
+function startGame(gameStarted)
+{
+    return true;
+}
+
+
+/**
+ * Retourne l'état initial d'une nouvelle pièce.
+ */
+function initNewPiece(piece)
+{
+	return {
+		piece: piece,
+		x: 3,
+		y: 0,
+		rotation: 0,
+		isFixed: false
+	};
+}
+
+/**
+ * Retourne true si la partie est terminée (collision détectée à l'apparition de la pièce).
+ */
+function isGameOver(piece, rotationIndex, col, row, grid, pieces)
+{
+	if (hasCollisionBelow(pieces[piece][rotationIndex], col , row - 1, grid)) 
+  		return true;
+	return false;
+}
+
+
+/**
+ * Retourne un nouvel objet players avec l'état du joueur mis à jour.
+ */
+function updatePlayerState(players, socketId, piece, x, y, rotation)
+{
+	return {
+		...players,
+		[socketId]: {
+			...players[socketId],
+			piece: piece,
+			x: x,
+			y: y,
+			rotation: rotation
+		}
+	};
+}
+
+
+// --------- callback ------------------
 
 
 // Réception de la séquence et démarrage
 socket.on("startGame", (gameData) => {
-	gameStarted = true;
-
+	gameStarted = startGame(gameStarted);
 	socket.emit("needNewPiece");
 });
 
+// JE SUIS ICI 
 
-socket.on("newPiece", ({ piece: newPiece }) => {
-	piece = newPiece;
-	startX = 3;
-	startY = 0;
-	currentRotationIndex = 0;
-	isFixed = false;
-	clearInterval(gameLoop);
-	gameLoop = setInterval(dropPiece, 500);
-	if (hasCollisionBelow(matrix[piece][currentRotationIndex], startX, startY - 1, grid)) 
-	{
-		console.log("❌ GAME OVER détecté à l’apparition");
-  		clearInterval(gameLoop);
-  		document.getElementById("game-over").style.display = "block";
-  		return;
-	}
-	if (!players[socket.id])
-	{
-		players[socket.id] = {
-			grid: Array.from({ length: 20 }, () => Array(10).fill(0)),
-		};
-	}
-	players[socket.id].piece = piece;
-	players[socket.id].x = startX;
-	players[socket.id].y = startY;
-	players[socket.id].rotation = currentRotationIndex;
-	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
-	socket.emit("playerAction", {
-		key: "newPiece",
-		id: socket.id,
-		piece: piece
-	});
+socket.on("newPiece", ({ piece: newPiece }) => {	
+	initNewPiece(piece);
+	isGameOver(piece, rotationIndex, col, row, grid, pieces);
+	updatePlayerState(players, socketId, piece, x, y, rotation);
+
 });
+
+
+
+// socket.on("newPiece", ({ piece: newPiece }) => {
+// 	piece = newPiece;
+// 	startX = 3;
+// 	startY = 0;
+// 	currentRotationIndex = 0;
+// 	isFixed = false;
+// 	clearInterval(gameLoop);
+// 	gameLoop = setInterval(dropPiece, 500);
+// 	if (hasCollisionBelow(matrix[piece][currentRotationIndex], startX, startY - 1, grid)) 
+// 	{
+// 		console.log("❌ GAME OVER détecté à l’apparition");
+//   		clearInterval(gameLoop);
+//   		document.getElementById("game-over").style.display = "block";
+//   		return;
+// 	}
+// 	if (!players[socket.id])
+// 	{
+// 		players[socket.id] = {
+// 			grid: Array.from({ length: 20 }, () => Array(10).fill(0)),
+// 		};
+// 	}
+// 	players[socket.id].piece = piece;
+// 	players[socket.id].x = startX;
+// 	players[socket.id].y = startY;
+// 	players[socket.id].rotation = currentRotationIndex;
+// 	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
+// 	socket.emit("playerAction", {
+// 		key: "newPiece",
+// 		id: socket.id,
+// 		piece: piece
+// 	});
+// });
 
 // initialisation et sauvegarde les datas de l'adversaires
 socket.on("updateOtherPlayer", ({ key, id, piece, x, y, rotation }) => {

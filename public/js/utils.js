@@ -297,8 +297,6 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 }			
 
 
-
-	
 /**
  * Génère les cellules HTML d'une grille et les ajoute dans le container donné.
  */
@@ -313,6 +311,3 @@ function addCellulesInTheGrill(container, gridWidth, gridHeight)
 	}
 }
 
-// JE SUIS ICI 
-	// grid.splice(i, 1); // supprime la ligne
-	// grid.unshift(new Array(10).fill(0)); // ajoute une nouvelle ligne en haut
