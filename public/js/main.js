@@ -91,49 +91,34 @@ socket.on("startGame", (gameData) => {
 	socket.emit("needNewPiece");
 });
 
-// JE SUIS ICI 
 
-socket.on("newPiece", ({ piece: newPiece }) => {	
-	initNewPiece(piece);
-	isGameOver(piece, rotationIndex, col, row, grid, pieces);
-	updatePlayerState(players, socketId, piece, x, y, rotation);
+socket.on("newPiece", ({ piece: newPiece }) => {
+	clearInterval(gameLoop); // précaution -> arrête la loop.
+	gameLoop = setInterval(dropPiece, 500);
+	const newState = initNewPiece(newPiece);
+	piece = newState.piece;
+	let col = newState.x;
+	let row = newState.y;
+	let currentRotation = newState.rotation;
 
+	const gameOver = isGameOver(piece, currentRotation, col, row, grid, matrix);
+	if (gameOver === true)
+	{
+		clearInterval(gameLoop);
+		document.getElementById("game-over").style.display = "block";
+		return;
+	}
+	displayPiece(matrix[piece][currentRotation], col, row, gameCells, 10, 'red');
+	players = updatePlayerState(players, socket.id, piece, col, row, currentRotation);
+	socket.emit("playerAction", {
+		key: "newPiece",
+		id: socket.id,
+		piece: piece
+	});
 });
 
+// JE SUIS ICI 
 
-
-// socket.on("newPiece", ({ piece: newPiece }) => {
-// 	piece = newPiece;
-// 	startX = 3;
-// 	startY = 0;
-// 	currentRotationIndex = 0;
-// 	isFixed = false;
-// 	clearInterval(gameLoop);
-// 	gameLoop = setInterval(dropPiece, 500);
-// 	if (hasCollisionBelow(matrix[piece][currentRotationIndex], startX, startY - 1, grid)) 
-// 	{
-// 		console.log("❌ GAME OVER détecté à l’apparition");
-//   		clearInterval(gameLoop);
-//   		document.getElementById("game-over").style.display = "block";
-//   		return;
-// 	}
-// 	if (!players[socket.id])
-// 	{
-// 		players[socket.id] = {
-// 			grid: Array.from({ length: 20 }, () => Array(10).fill(0)),
-// 		};
-// 	}
-// 	players[socket.id].piece = piece;
-// 	players[socket.id].x = startX;
-// 	players[socket.id].y = startY;
-// 	players[socket.id].rotation = currentRotationIndex;
-// 	displayPiece(matrix[piece][currentRotationIndex], startX, startY, 'red', gameCells);
-// 	socket.emit("playerAction", {
-// 		key: "newPiece",
-// 		id: socket.id,
-// 		piece: piece
-// 	});
-// });
 
 // initialisation et sauvegarde les datas de l'adversaires
 socket.on("updateOtherPlayer", ({ key, id, piece, x, y, rotation }) => {
