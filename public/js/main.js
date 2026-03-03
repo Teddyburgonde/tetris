@@ -117,16 +117,16 @@ socket.on("newPiece", ({ piece: newPiece }) => {
 	});
 });
 
-// JE SUIS ICI 
 
-
-// initialisation et sauvegarde les datas de l'adversaires
-socket.on("updateOtherPlayer", ({ key, id, piece, x, y, rotation }) => {
-	console.log("🎯 updateOtherPlayer reçu :", { key, id, piece, x, y, rotation });
-
-	if (!players[id]) {
-		console.log("ℹ️ Initialisation du joueur", id);
-		players[id] = {
+/**
+ * Initialise un objet joueur s'il n'existe pas encore dans le répertoire des joueurs.
+ */
+function initRemotePlayer(players, id, piece)
+{
+	if (!players[id]) 
+	{
+		players[id] = 
+		{
 			grid: Array.from({ length: 20 }, () => Array(10).fill(0)),
 			x: 3,
 			y: 0,
@@ -134,61 +134,103 @@ socket.on("updateOtherPlayer", ({ key, id, piece, x, y, rotation }) => {
 			piece: piece
 		};
 	}
+}
 
-	const player = players[id];
-
-	// ⚙️ Mise à jour des données du joueur selon le type de message
-	if (key === "newPiece") {
-		player.piece = piece;
+/**
+ * Met à jour les coordonnées et la rotation du joueur distant.
+ */
+function updateRemotePlayerPosition(player, data)
+{
+	// Si c'est une nouvelle pièce, on réinitialise tout
+	if (data.key === "newPiece") 
+	{
+		player.piece = data.piece;
 		player.x = 3;
 		player.y = 0;
 		player.rotation = 0;
-	} else {
-		player.x = x;
-		player.y = y;
-		player.rotation = typeof rotation === 'number' ? rotation : 0;
+	}
+	else // Sinon, on met à jour les coordonnées reçues
+	{
+		player.x = data.x;
+        player.y = data.y;
+		if (typeof data.rotation === 'number') 
+            player.rotation = data.rotation;
+		else
+            player.rotation = 0;
+	}
+}
 
-		if (key === "fix") {
-			const mat = matrix[player.piece]?.[player.rotation];
-			if (!mat) 
+/**
+ * Intègre les blocs de la pièce actuelle dans la grille de données du joueur adverse.
+ */
+function fixPieceToRemoteGrid(player, pieceMatrix)
+{
+	// On vérifie si la matrice existe
+	if (!pieceMatrix) 
+		return;
+	// On parcourt la matrice de la pièce
+	for (let j = 0; j < pieceMatrix.length; j++) 
+	{
+		for (let i = 0; i < pieceMatrix[j].length; i++) 
+		{
+			// Si la case de la pièce est pleine (1)
+			if (pieceMatrix[j][i] === 1) 
 			{
-				console.warn("❌ fix ignoré : matrix introuvable pour", player.piece, player.rotation);
-				return;
-			}
-			for (let j = 0; j < mat.length; j++) {
-				for (let i = 0; i < mat[j].length; i++) {
-					if (mat[j][i] === 1) {
-						const gx = player.x + i;
-						const gy = player.y + j;
-						if (gy >= 0 && gy < 20 && gx >= 0 && gx < 10) {
-							player.grid[gy][gx] = 1;
-						}
-					}
-				}
+				const gridCoordX = player.x + i;
+				const gridCoordY = player.y + j;
+
+				const isInsideGrid = gridCoordY >= 0 && gridCoordY < 20 && gridCoordX >= 0 && gridCoordX < 10;
+				// On vérifie qu'on ne sort pas de la grille (20x10)
+				if (isInsideGrid) 
+					player.grid[gridCoordY][gridCoordX] = 1;
 			}
 		}
 	}
+}
 
-	// 🧼 Efface la pièce précédente
-	const oldMatrix = matrix[player.piece]?.[player.rotation];
-	if (!oldMatrix) 
+
+/**
+ * Met à jour l'affichage visuel de la grille de l'adversaire.
+ */
+function updateOpponentGridDisplay(playerGrid, cells)
+{
+	for (let j = 0; j < 20; j++) 
 	{
-		console.warn("❌ displayPiece ignoré : matrix introuvable pour", player.piece, player.rotation);
-		return;
-	}
-	clearPiece(oldMatrix, player.x, player.y, opponentCells);
-
-	// 🎨 Affiche la grille fixe
-	for (let j = 0; j < 20; j++) {
 		for (let i = 0; i < 10; i++) {
 			const index = j * 10 + i;
-			opponentCells[index].style.backgroundColor = player.grid[j][i] === 1 ? 'blue' : '';
+			if (playerGrid[j][i] === 1)
+				cells[index].style.backgroundColor = 'blue';
+			else
+				cells[index].style.backgroundColor = '';
 		}
 	}
+}
 
-	// 🎮 Affiche la nouvelle pièce
-	displayPiece(oldMatrix, player.x, player.y, 'blue', opponentCells);
+socket.on("updateOtherPlayer", (data) => {
+	// On initialise le joueur
+	initRemotePlayer(players, data.id, data.piece);
+
+	// On récupère la référence du joueur
+	const player = players[data.id];
+	
+	// On met à jour ses coordonnées
+	updateRemotePlayerPosition(player, data)
+	
+	// Si l'adversaire a fixé une pièce, on l'ajoute à sa grille logique
+	if (data.key === "fix")
+    {
+        const mat = matrix[player.piece]?.[player.rotation];
+        fixPieceToRemoteGrid(player, mat);
+    }
+	// On prépare la matrice actuelle pour l'affichage visuel
+	const currentMat = matrix[player.piece][player.rotation];
+	
+	// Rendu visuel : on dessine la grille fixe puis la pièce mobile par-dessus
+	updateOpponentGridDisplay(player.grid, opponentCells);
+	displayPiece(currentMat, player.x, player.y, 'blue', opponentCells);
 });
+
+// JE SUIS ICI 
 
 socket.on("receivePenalty", (nbLignes) => {
 	const adversaireId = Object.keys(players).find(id => id !== socket.id);
@@ -197,3 +239,4 @@ socket.on("receivePenalty", (nbLignes) => {
 		grid.push(Array(10).fill('P'));
 	updateGridDisplay();
 });
+
