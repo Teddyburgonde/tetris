@@ -81,43 +81,6 @@ function updatePlayerState(players, socketId, piece, x, y, rotation)
 	};
 }
 
-
-// --------- callback ------------------
-
-
-// Réception de la séquence et démarrage
-socket.on("startGame", (gameData) => {
-	gameStarted = startGame(gameStarted);
-	socket.emit("needNewPiece");
-});
-
-
-socket.on("newPiece", ({ piece: newPiece }) => {
-	clearInterval(gameLoop); // précaution -> arrête la loop.
-	gameLoop = setInterval(dropPiece, 500);
-	const newState = initNewPiece(newPiece);
-	piece = newState.piece;
-	let col = newState.x;
-	let row = newState.y;
-	let currentRotation = newState.rotation;
-
-	const gameOver = isGameOver(piece, currentRotation, col, row, grid, matrix);
-	if (gameOver === true)
-	{
-		clearInterval(gameLoop);
-		document.getElementById("game-over").style.display = "block";
-		return;
-	}
-	displayPiece(matrix[piece][currentRotation], col, row, gameCells, 10, 'red');
-	players = updatePlayerState(players, socket.id, piece, col, row, currentRotation);
-	socket.emit("playerAction", {
-		key: "newPiece",
-		id: socket.id,
-		piece: piece
-	});
-});
-
-
 /**
  * Initialise un objet joueur s'il n'existe pas encore dans le répertoire des joueurs.
  */
@@ -159,6 +122,7 @@ function updateRemotePlayerPosition(player, data)
             player.rotation = 0;
 	}
 }
+
 
 /**
  * Intègre les blocs de la pièce actuelle dans la grille de données du joueur adverse.
@@ -206,6 +170,81 @@ function updateOpponentGridDisplay(playerGrid, cells)
 	}
 }
 
+
+
+/**
+ * Crée une copie indépendante de la grille.
+ */
+function copyGrid(currentGrid)
+{
+	let newGrid = [];
+	for (let i = 0; i < currentGrid.length; ++i)
+	{
+		newGrid.push(currentGrid[i].slice());
+	}
+	return newGrid;
+
+}
+
+/**
+ * Crée une copie de la grille actuelle et y ajoute des lignes de pénalité 
+ * en décalant le contenu vers le haut.
+ */
+function applyPenaltyToGrid(currentGrid, nbLines) 
+{
+	let newGrid = copyGrid(currentGrid);
+
+	for (let i = 0; i < nbLines; i++) 
+	{
+		// 1. Supprime la ligne du haut (index 0)
+		newGrid.shift();
+
+		// 2. Ajoute une ligne de pénalité en bas (remplie de 'P')
+		newGrid.push(new Array(10).fill('P'));
+	}
+	return newGrid;
+}
+
+// --------- callback ------------------
+
+
+// Réception de la séquence et démarrage
+socket.on("startGame", (gameData) => {
+	gameStarted = startGame(gameStarted);
+	socket.emit("needNewPiece");
+});
+
+
+socket.on("newPiece", ({ piece: newPiece }) => {
+	clearInterval(gameLoop); // précaution -> arrête la loop.
+	gameLoop = setInterval(dropPiece, 500);
+	const newState = initNewPiece(newPiece);
+	piece = newState.piece;
+	let col = newState.x;
+	let row = newState.y;
+	let currentRotation = newState.rotation;
+
+	const gameOver = isGameOver(piece, currentRotation, col, row, grid, matrix);
+	if (gameOver === true)
+	{
+		clearInterval(gameLoop);
+		document.getElementById("game-over").style.display = "block";
+		return;
+	}
+	displayPiece(matrix[piece][currentRotation], col, row, gameCells, 10, 'red');
+	players = updatePlayerState(players, socket.id, piece, col, row, currentRotation);
+	socket.emit("playerAction", {
+		key: "newPiece",
+		id: socket.id,
+		piece: piece
+	});
+});
+
+
+/**
+ * Gère la synchronisation en temps réel du joueur adverse :
+ * Initialise le joueur, met à jour sa position et synchronise sa grille.
+ */
 socket.on("updateOtherPlayer", (data) => {
 	// On initialise le joueur
 	initRemotePlayer(players, data.id, data.piece);
@@ -218,25 +257,25 @@ socket.on("updateOtherPlayer", (data) => {
 	
 	// Si l'adversaire a fixé une pièce, on l'ajoute à sa grille logique
 	if (data.key === "fix")
-    {
-        const mat = matrix[player.piece]?.[player.rotation];
-        fixPieceToRemoteGrid(player, mat);
-    }
+	{
+		const mat = matrix[player.piece]?.[player.rotation];
+		fixPieceToRemoteGrid(player, mat);
+	}
 	// On prépare la matrice actuelle pour l'affichage visuel
 	const currentMat = matrix[player.piece][player.rotation];
-	
+
 	// Rendu visuel : on dessine la grille fixe puis la pièce mobile par-dessus
 	updateOpponentGridDisplay(player.grid, opponentCells);
 	displayPiece(currentMat, player.x, player.y, 'blue', opponentCells);
 });
 
-// JE SUIS ICI 
 
+/**
+ * Écoute l'événement de pénalité envoyé par le serveur, met à jour 
+ * la grille logique et rafraîchit l'affichage visuel.
+ */
 socket.on("receivePenalty", (nbLignes) => {
-	const adversaireId = Object.keys(players).find(id => id !== socket.id);
-	grid.shift();
-	for (let i = 0; i < nbLignes; ++i)
-		grid.push(Array(10).fill('P'));
-	updateGridDisplay();
+	grid = applyPenaltyToGrid(grid, nbLignes);
+	updateGridDisplay(grid, gameCells, 10, 20);
 });
 
