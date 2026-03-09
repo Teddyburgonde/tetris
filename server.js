@@ -1,6 +1,3 @@
-app.use(express.static("public"));
-const Game = require('./game');
-
 /**
  * === Serveur Multijoueur Tetris avec Socket.IO ===
  *
@@ -15,6 +12,12 @@ const Game = require('./game');
  * - Gère les pénalités (envoi de lignes) entre adversaires
  */
 
+
+/* import */
+app.use(express.static("public"));
+const Game = require('./game');
+
+
 /* Configuration du serveur HTTP et Socket.IO */
 const express = require("express");
 const http = require("http");
@@ -28,28 +31,48 @@ const io = new Server(httpServer, {
   }
 });
 
+// Instance game
+const game = new Game();
+
+
+/**
+ * Gère la connexion d'un nouveau joueur, génère sa séquence de pièces
+ * et démarre la partie si assez de joueurs sont connectés.
+ */
+function handleConnection(socket, game, io)
+{
+	game.players[socket.id] = { id: socket.id };
+
+	game.playerQueues[socket.id] = game.generatePieceSequence(100);
+
+	if (!game.gameStarted && Object.keys(game.players).length >= 2) 
+	{
+		game.gameStarted = true;
+		for (const playerId in game.players) 
+		{
+			const firstPiece = game.playerQueues[playerId].shift();
+			io.to(playerId).emit("startGame", { firstPiece });
+		}
+	}
+}
+
+
+
+// function handleConnection(socket, game, io) ✅
+// function handleNeedNewPiece(socket, game) ❌
+// function handlePlayerAction(socket, data) ❌
+// function handleDisconnect(socket, game) ❌
+// function handleSendPenalty(socket, game, nbLignes) ❌
+
+
 
 
 // === Connexion d'un joueur ===
 io.on("connection", (socket) => {
-	console.log("✅ Un joueur s'est connecté :", socket.id);
+	
+	handleConnection(socket, game, io)
 
-	// Ajoute le joueur à la liste
-	players[socket.id] = { id: socket.id };
 
-	// Génère une séquence de pièces pour ce joueur
-	playerQueues[socket.id] = generatePieceSequence(100);
-
-	// Démarre la partie si au moins deux joueurs sont connectés
-	if (!gameStarted && Object.keys(players).length >= 2) 
-	{
-		gameStarted = true;
-		for (const playerId in players) 
-		{
-			const firstPiece = playerQueues[playerId].shift(); // Envoie la première pièce
-			io.to(playerId).emit("startGame", { firstPiece }); // Message personnalisé par joueur
-		}
-	}
 
 	/**
 	 * Quand un joueur demande une nouvelle pièce
@@ -105,6 +128,13 @@ io.on("connection", (socket) => {
 		io.to(targetId).emit("receivePenalty", nbLignes);
 	});
 });
+
+
+
+
+
+
+
 
 /* Démarre le serveur HTTP */
 httpServer.listen(3000, () => 
