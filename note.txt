@@ -1,2 +1,0 @@
-On a pas le droit d'utiliser les variables global sauf
-dans les callbacks.
