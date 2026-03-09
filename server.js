@@ -1,3 +1,6 @@
+app.use(express.static("public"));
+const Game = require('./game');
+
 /**
  * === Serveur Multijoueur Tetris avec Socket.IO ===
  *
@@ -12,16 +15,12 @@
  * - Gère les pénalités (envoi de lignes) entre adversaires
  */
 
+/* Configuration du serveur HTTP et Socket.IO */
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
-
 const app = express();
-
-// Création du serveur HTTP à partir d'Express
 const httpServer = http.createServer(app);
-
-// Configuration de Socket.IO avec CORS pour accepter toutes les origines
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
@@ -29,39 +28,7 @@ const io = new Server(httpServer, {
   }
 });
 
-// === Variables de jeu ===
 
-// Contient les informations sur chaque joueur connecté
-const players = {};
-
-// File d'attente individuelle de pièces par joueur
-const playerQueues = {};
-
-// Indique si la partie a déjà démarré
-let gameStarted = false;
-
-// Sert les fichiers statiques dans le dossier /public (ex: index.html, script.js)
-app.use(express.static("public"));
-
-/**
- * generatePieceSequence - Génère une séquence de pièces aléatoires.
- *
- * Retourne un tableau contenant `count` pièces parmi 'I', 'O', 'T', 'J', 'L', 'S', 'Z'.
- *
- * @param count Nombre de pièces à générer
- * @return Tableau de lettres représentant les pièces
- */
-function generatePieceSequence(count) 
-{
-	const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
-	const sequence = [];
-	for (let i = 0; i < count; i++) 
-	{
-		const piece = pieces[Math.floor(Math.random() * pieces.length)];
-		sequence.push(piece);
-	}
-	return sequence;
-}
 
 // === Connexion d'un joueur ===
 io.on("connection", (socket) => {
@@ -139,8 +106,8 @@ io.on("connection", (socket) => {
 	});
 });
 
-// Démarre le serveur HTTP
+/* Démarre le serveur HTTP */
 httpServer.listen(3000, () => 
 {
-	console.log("Serveur en écoute sur http://localhost:3000");
+	console.log("Server listening on http://localhost:3000");
 });

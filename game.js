@@ -1,0 +1,21 @@
+class Game 
+{
+	constructor() 
+	{
+		this.players = {};
+		this.playerQueues = {};
+		this.gameStarted = false;
+	}
+
+	/* Génère une séquence de pièces aléatoires. */
+	generatePieceSequence(count) 
+	{
+		const pieces = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'];
+		const sequence = [];
+		for (let i = 0; i < count; i++) 
+			sequence.push(pieces[Math.floor(Math.random() * pieces.length)]);
+		return sequence;
+	}
+}
+
+module.exports = Game;
