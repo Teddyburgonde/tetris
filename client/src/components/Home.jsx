@@ -7,6 +7,7 @@ function Home() {
 	const [roomName, setRoomName] = useState('')
 	const [error, setError] = useState('')
 	let navigate = useNavigate();
+	
 
 	const handlePlay = () => {
 		if (playerName === '' || roomName === '')

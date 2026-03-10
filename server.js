@@ -18,8 +18,7 @@ const io = new Server(httpServer, {
 // Acces pour les fichiers dans le dossier public
 app.use(express.static("public"));
 
-// Instance game
-const game = new Game();
+const rooms = {};
 
 
 /**
@@ -92,8 +91,22 @@ function handleSendPenalty(socket, game, nbLignes, io)
 	io.to(targetId).emit("receivePenalty", nbLignes);
 }
 
+
+// JE SUIS ICI 
+function handleJoinRoom(socket, room, playerName, io)
+{
+	// Si la room n'existe pas encore, créer une nouvelle instance de Game
+	// Ajouter le joueur dans la room avec son nom et son socket.id
+	// Faire rejoindre le socket dans le channel socket.io de la room
+	// Envoyer à tous les joueurs de la room la liste des joueurs mis à jour
+}
+
+
 /* Connexion d'un joueur */
 io.on("connection", (socket) => {
+
+	socket.on("joinRoom", ({ room, playerName }) => handleJoinRoom(socket, room, playerName, io));
+
 	
 	handleConnection(socket, game, io)
 	socket.on("needNewPiece", () => handleNeedNewPiece(socket, game));
@@ -101,6 +114,10 @@ io.on("connection", (socket) => {
 	socket.on("disconnect", () => handleDisconnect(socket, game));
 	socket.on("sendPenalty", (nbLignes = 1) => handleSendPenalty(socket, game, nbLignes, io));
 });
+
+
+
+
 
 /* Démarre le serveur HTTP */
 httpServer.listen(3000, () => 
