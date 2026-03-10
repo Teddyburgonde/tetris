@@ -4,3 +4,20 @@ Accueil — formulaire pour entrer nom du joueur et nom de la room ❌
 Lobby — salle d'attente, le host peut lancer la partie ❌
 Jeu — grille du joueur + grille(s) adversaire(s) + spectrum ❌
 Game Over / Victoire — résultat avec bouton rejouer ❌
+
+
+Accueil 
+
+┌─────────────────────────┐
+│       RED TETRIS        │
+│                         │
+│  Nom du joueur:         │
+│  [________________]     │
+│                         │
+│  Nom de la room:        │
+│  [________________]     │
+│                         │
+│     [  JOUER  ]         │
+└─────────────────────────┘
+
+

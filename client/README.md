@@ -1,16 +1,43 @@
-# React + Vite
+# 🔴 Red Tetris – Networked Multiplayer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📖 Présentation du Projet**Red Tetris**
+C'est un jeu de puzzle multijoueur en ligne développé dans le cadre d'un projet Full Stack JavaScript.
+L'objectif est de construire une application performante permettant à plusieurs joueurs de s'affronter simultanément dans des sessions synchronisées.
+Le projet repose sur une architecture client/serveur utilisant **Node.js** pour le backend et un frontend moderne, communiquant via le protocole **Socket.io**.
 
-Currently, two official plugins are available:
+## 🛠️ Concepts & Contraintes Techniques
+Ce projet suit des règles de développement strictes pour garantir la qualité et la maintenabilité du code :
+***Programmation Fonctionnelle (Client)** : La logique du jeu (grille, pièces) est implémentée exclusivement via des **fonctions pures**.
+***Interdiction du mot-clé `this`** : Le code côté client est écrit sans utiliser `this`, privilégiant les constructions fonctionnelles aux classes.
+***Architecture Orientée Objet (Serveur)** : Le serveur Node.js utilise des classes (Player, Piece, Game) pour gérer la logique globale[cite: 39, 40].
+***Zéro Manipulation DOM Directe** : L'affichage est géré de manière réactive sans bibliothèques comme jQuery.
+***Layout Moderne** : Utilisation exclusive de **Flexbox** et **CSS Grid** pour le rendu visuel, sans aucun élément `<table />`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Fonctionnalités Implémentées
 
-## React Compiler
+### 🎮 Système de Jeu (Mandatory)
+- **Mouvements & Rotations** : Déplacements (Gauche/Droite), rotation (Flèche Haut), chute rapide (Bas) et Hard Drop (Espace).
+- **Tétrominos** : Intégration des 7 formes originales (O, I, T, L, J, S, Z) avec leurs matrices de rotation.
+- **Grille Standard** : Terrain de jeu de 10 colonnes par 20 lignes.
+- **Mode Multijoueur** : Synchronisation de la même séquence de pièces pour tous les joueurs d'une même partie.
+- **Lignes de Pénalité** : La suppression de lignes envoie des lignes de "béton" indestructibles aux adversaires ($n-1$ lignes).
+- **Condition de Fin** : Détection du Game Over lorsqu'une nouvelle pièce ne peut plus entrer sur le terrain.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 💻 Infrastructure & Refactorisation
+- **Single Page Application (SPA)** : Application fluide sans rechargement de page.
+-  **Modularisation** : Séparation de la logique de calcul (fonctions pures dans `utils.js` et `dropPiece.js`).
+-  **Refactorisation (Pureté)** : Fonctions d'affichage (`updateGridDisplay`, `displayPiece`, `clearPiece`) et de calcul (`canRotate`) isolées des variables globales.
 
-## Expanding the ESLint configuration
+## 🚦 Installation et Lancement
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prérequis
+- Node.js (dernière version stable recommandée).
+
+### Lancement en local
+1.  **Démarrer le serveur** :
+    ```bash
+    npm run dev
+    ```
+2.  **Lancer le client** :
+    - http://localhost:5173/
+    -Pour rejoindre une partie spécifique : `http://<ip>:<port>/#<room>[<player_name>]`.
