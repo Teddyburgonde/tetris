@@ -1,12 +1,11 @@
 /* import */
-app.use(express.static("public"));
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 const Game = require('./game');
 
 
 /* Configuration du serveur HTTP et Socket.IO */
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
 const app = express();
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
@@ -15,6 +14,9 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"]
   }
 });
+
+// Acces pour les fichiers dans le dossier public
+app.use(express.static("public"));
 
 // Instance game
 const game = new Game();
