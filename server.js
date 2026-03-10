@@ -32,7 +32,8 @@ function handleConnection(socket, game, io)
 
 	game.playerQueues[socket.id] = game.generatePieceSequence(100);
 
-	if (!game.gameStarted && Object.keys(game.players).length >= 2) 
+	// changer la length pour le mode 2 joueurs
+	if (!game.gameStarted && Object.keys(game.players).length >= 1) 
 	{
 		game.gameStarted = true;
 		for (const playerId in game.players) 

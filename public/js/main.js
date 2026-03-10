@@ -1,21 +1,25 @@
-const socket = io("http://10.11.6.6:3000");
-//const socket = io(`http://${window.location.hostname}:3000`);
+
+// Decommenter pour jouer a deux
+// const socket = io("http://10.11.6.6:3000");
+const socket = io(`http://${window.location.hostname}:3000`);
 
 document.addEventListener('keydown', handleKeyPress);
 
-const players = {};
+let players = {};
 let isFixed = false;
 let gameStarted = false;
 let score = 0;
 let piece;
-let startX = 3;
-let startY = 1;
-let currentRotationIndex = 0;
 let gameLoop;
+let col = 3;
+let row = 0;
+let currentRotation = 0;
 
+const gameGrid = document.getElementById('game-grid');
+const opponentGrid = document.getElementById('opponent-grid');
+addCellulesInTheGrill(gameGrid, 10, 20);
+addCellulesInTheGrill(opponentGrid, 10, 20);
 
-addCellulesInTheGrill();
-addCellsToOpponentGrid();
 
 const gameCells = document.querySelectorAll('#game-grid .cell');
 const opponentCells = document.querySelectorAll('#opponent-grid .cell');
@@ -160,7 +164,8 @@ function updateOpponentGridDisplay(playerGrid, cells)
 {
 	for (let j = 0; j < 20; j++) 
 	{
-		for (let i = 0; i < 10; i++) {
+		for (let i = 0; i < 10; i++) 
+		{
 			const index = j * 10 + i;
 			if (playerGrid[j][i] === 1)
 				cells[index].style.backgroundColor = 'blue';
@@ -171,7 +176,6 @@ function updateOpponentGridDisplay(playerGrid, cells)
 }
 
 
-
 /**
  * Crée une copie indépendante de la grille.
  */
@@ -179,9 +183,7 @@ function copyGrid(currentGrid)
 {
 	let newGrid = [];
 	for (let i = 0; i < currentGrid.length; ++i)
-	{
 		newGrid.push(currentGrid[i].slice());
-	}
 	return newGrid;
 
 }
@@ -217,7 +219,7 @@ socket.on("startGame", (gameData) => {
 
 socket.on("newPiece", ({ piece: newPiece }) => {
 	clearInterval(gameLoop); // précaution -> arrête la loop.
-	gameLoop = setInterval(dropPiece, 500);
+	gameLoop = setInterval(() => dropPiece(piece, currentRotation, col, row, grid), 500);
 	const newState = initNewPiece(newPiece);
 	piece = newState.piece;
 	let col = newState.x;
