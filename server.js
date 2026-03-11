@@ -22,28 +22,6 @@ const rooms = {};
 
 
 /**
- * Gère la connexion d'un nouveau joueur, génère sa séquence de pièces
- * et démarre la partie si assez de joueurs sont connectés.
- */
-function handleConnection(socket, game, io)
-{
-	game.players[socket.id] = { id: socket.id };
-
-	game.playerQueues[socket.id] = game.generatePieceSequence(100);
-
-	// changer la length pour le mode 2 joueurs
-	if (!game.gameStarted && Object.keys(game.players).length >= 1) 
-	{
-		game.gameStarted = true;
-		for (const playerId in game.players) 
-		{
-			const firstPiece = game.playerQueues[playerId].shift();
-			io.to(playerId).emit("startGame", { firstPiece });
-		}
-	}
-}
-
-/**
  * Envoie la prochaine pièce au joueur et informe les autres joueurs.
  */
 function handleNeedNewPiece(socket, game)
@@ -92,13 +70,16 @@ function handleSendPenalty(socket, game, nbLignes, io)
 }
 
 
-// JE SUIS ICI 
+/**
+ * Gère l'arrivée d'un joueur dans une room et informe tous les joueurs connectés.
+ */
 function handleJoinRoom(socket, room, playerName, io)
 {
-	// Si la room n'existe pas encore, créer une nouvelle instance de Game
-	// Ajouter le joueur dans la room avec son nom et son socket.id
-	// Faire rejoindre le socket dans le channel socket.io de la room
-	// Envoyer à tous les joueurs de la room la liste des joueurs mis à jour
+	if (!rooms[room])
+		rooms[room] = new Game();
+	rooms[room].players[socket.id] = {id : socket.id, name: playerName};
+	socket.join(room);
+	io.to(room).emit("roomPlayers", Object.values(rooms[room].players).map(p => p.name));
 }
 
 
@@ -106,9 +87,6 @@ function handleJoinRoom(socket, room, playerName, io)
 io.on("connection", (socket) => {
 
 	socket.on("joinRoom", ({ room, playerName }) => handleJoinRoom(socket, room, playerName, io));
-
-	
-	handleConnection(socket, game, io)
 	socket.on("needNewPiece", () => handleNeedNewPiece(socket, game));
 	socket.on("playerAction", (data) => handlePlayerAction(socket, data));
 	socket.on("disconnect", () => handleDisconnect(socket, game));
