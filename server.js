@@ -9,17 +9,14 @@ const Game = require('./game');
 const app = express();
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
+	cors: {
+		origin: "*",
+		methods: ["GET", "POST"]
+	}
 });
 
-// Acces pour les fichiers dans le dossier public
-app.use(express.static("public"));
-
+// La liste des rooms
 const rooms = {};
-
 
 /**
  * Envoie la prochaine pièce au joueur et informe les autres joueurs.
@@ -59,14 +56,13 @@ function handleDisconnect(socket, roomName)
 		delete rooms[roomName];
 }
 
-// JE SUIS ICI 
 /**
  * Quand un joueur envoie une pénalité (ex: après avoir fait des lignes)
  * Une ligne est envoyée à l'adversaire pour rendre le jeu plus difficile.
  */
-function handleSendPenalty(socket, game, nbLignes, io)
+function handleSendPenalty(socket, roomName, nbLignes, io)
 {
-	const adversaires = Object.keys(game.players).filter(id => id !== socket.id);
+	const adversaires = Object.keys(rooms[roomName].players).filter(id => id !== socket.id);
 	if (adversaires.length === 0)
 		return;
 
@@ -82,25 +78,23 @@ function handleJoinRoom(socket, room, playerName, io)
 {
 	if (!rooms[room])
 		rooms[room] = new Game();
+	socket.roomName = room;
 	rooms[room].players[socket.id] = {id : socket.id, name: playerName};
 	rooms[room].playerQueues[socket.id] = rooms[room].generatePieceSequence(100);
 	socket.join(room);
 	io.to(room).emit("roomPlayers", Object.values(rooms[room].players).map(p => p.name));
 }
 
-
+ 
 /* Connexion d'un joueur */
 io.on("connection", (socket) => {
 
 	socket.on("joinRoom", ({ room, playerName }) => handleJoinRoom(socket, room, playerName, io));
-	socket.on("needNewPiece", () => handleNeedNewPiece(socket, game));
-	socket.on("playerAction", (data) => handlePlayerAction(socket, data));
-	socket.on("disconnect", () => handleDisconnect(socket, game));
-	socket.on("sendPenalty", (nbLignes = 1) => handleSendPenalty(socket, game, nbLignes, io));
+	socket.on("needNewPiece", () => handleNeedNewPiece(socket, socket.roomName));
+	socket.on("playerAction", (data) => handlePlayerAction(socket, data, socket.roomName));
+	socket.on("disconnect", () => handleDisconnect(socket, socket.roomName));
+	socket.on("sendPenalty", (nbLignes = 1) => handleSendPenalty(socket, socket.roomName, nbLignes, io));
 });
-
-
-
 
 
 /* Démarre le serveur HTTP */
