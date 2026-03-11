@@ -39,7 +39,6 @@ function handleNeedNewPiece(socket, roomName)
 }
 
 
-
 /**
  * Relaie l'action d'un joueur à tous les autres joueurs connectés.
  */
@@ -48,16 +47,19 @@ function handlePlayerAction(socket, data, roomName)
 	socket.to(roomName).emit("updateOtherPlayer", data);
 }
 
-// JE SUIS ICI 
+
 /**
  * Gère la déconnexion d'un joueur en supprimant ses données.
  */
-function handleDisconnect(socket, game)
+function handleDisconnect(socket, roomName)
 {
-	delete game.players[socket.id];
-	delete game.playerQueues[socket.id];
+	delete rooms[roomName].players[socket.id];
+	delete rooms[roomName].playerQueues[socket.id];
+	if (Object.keys(rooms[roomName].players).length === 0)
+		delete rooms[roomName];
 }
 
+// JE SUIS ICI 
 /**
  * Quand un joueur envoie une pénalité (ex: après avoir fait des lignes)
  * Une ligne est envoyée à l'adversaire pour rendre le jeu plus difficile.
