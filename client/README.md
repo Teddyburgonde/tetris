@@ -36,8 +36,9 @@ Ce projet suit des règles de développement strictes pour garantir la qualité 
 ### Lancement en local
 1.  **Démarrer le serveur** :
     ```bash
-    npm run dev
+    node server.js dans le dossier client
     ```
 2.  **Lancer le client** :
+    - npm run dev
     - http://localhost:5173/
     -Pour rejoindre une partie spécifique : `http://<ip>:<port>/#<room>[<player_name>]`.

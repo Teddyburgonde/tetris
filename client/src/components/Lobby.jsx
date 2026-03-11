@@ -4,18 +4,6 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import socket from '../socket'
 
-
-// 1. Dans useEffect, émettre joinRoom au serveur avec room et playerName
-// Quand le composant s'affiche, dire au serveur que le joueur rejoint la room
-
-
-// 2. Écouter l'événement roomPlayers pour mettre à jour la liste des joueurs
-// Quand le serveur envoie la liste des joueurs, mettre à jour l'affichage
-
-// 3. Le bouton "Lancer la partie" doit être visible uniquement pour le host
-// Seulement le premier joueur connecté peut voir le bouton "Lancer la partie"
-
-
 function Lobby()
 {
 	const {room, playerName } = useParams();
@@ -28,13 +16,17 @@ function Lobby()
 	}
 
 	useEffect(() => {
-		socket.on('', (data) => {
-			// joinRoom
-			// roomPlayers
-		})
+		
+		// J'envoie un message au server "Un jouer a rejoint la room"
+		socket.emit("joinRoom", ({room, playerName}));
+
+		// J'ecoute ce que le server me dit "Voici la liste des joeurs"
+		socket.on("roomPlayers", (data) => {
+			setPlayers(data);
+		});
 		
 		return () => {
-			socket.off('')
+			socket.off("roomPlayers")
 		}
 	}, [])
 
@@ -50,12 +42,10 @@ function Lobby()
 					<li key={player}>{player}</li>
 				))}
 			</ul>
-
-			<button onClick={handleStart}>Lancer la partie</button>
+			{/* Si le premier jouer est le host on affiche le bouton */}
+			{players[0] === playerName && <button onClick={handleStart}>Lancer la partie</button>}
 		</div>
 	)
 }
-
-// handleStart
 
 export default Lobby
