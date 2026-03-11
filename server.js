@@ -38,14 +38,17 @@ function handleNeedNewPiece(socket, roomName)
 	});
 }
 
+
+
 /**
  * Relaie l'action d'un joueur à tous les autres joueurs connectés.
  */
-function handlePlayerAction(socket, data)
+function handlePlayerAction(socket, data, roomName)
 {
-	socket.broadcast.emit("updateOtherPlayer", data);
+	socket.to(roomName).emit("updateOtherPlayer", data);
 }
 
+// JE SUIS ICI 
 /**
  * Gère la déconnexion d'un joueur en supprimant ses données.
  */
