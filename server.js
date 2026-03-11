@@ -24,13 +24,13 @@ const rooms = {};
 /**
  * Envoie la prochaine pièce au joueur et informe les autres joueurs.
  */
-function handleNeedNewPiece(socket, game)
+function handleNeedNewPiece(socket, roomName)
 {
-	const next = game.playerQueues[socket.id]?.shift();
-		if (!next) 
-			return;
+	const next = rooms[roomName].playerQueues[socket.id]?.shift();
+	if (!next)
+		return;
 	socket.emit("newPiece", { piece: next });
-	socket.broadcast.emit("updateOtherPlayer", 
+	socket.to(roomName).emit("updateOtherPlayer", 
 	{
 		key: "newPiece",
 		id: socket.id,
@@ -78,6 +78,7 @@ function handleJoinRoom(socket, room, playerName, io)
 	if (!rooms[room])
 		rooms[room] = new Game();
 	rooms[room].players[socket.id] = {id : socket.id, name: playerName};
+	rooms[room].playerQueues[socket.id] = rooms[room].generatePieceSequence(100);
 	socket.join(room);
 	io.to(room).emit("roomPlayers", Object.values(rooms[room].players).map(p => p.name));
 }
