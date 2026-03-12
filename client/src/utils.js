@@ -297,17 +297,5 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 }			
 
 
-/**
- * Génère les cellules HTML d'une grille et les ajoute dans le container donné.
- */
-function addCellulesInTheGrill(container, gridWidth, gridHeight)
-{
-	const nbCells = gridWidth * gridHeight;
-	for (let i = 0; i < nbCells; i++)
-	{
-		const cell = document.createElement('div');
-		cell.classList.add('cell');
-		container.appendChild(cell);
-	}
-}
 
+export {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress}
