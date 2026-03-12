@@ -23,6 +23,7 @@ function Game()
 {
 	// useState permet de mettre ecran a jour des qu'on change la valeur de la variable.
 	const [grid, setGrid] = useState(Array.from({ length: 20 }, () => Array(10).fill(0)))
+	const [opponentGrid, setOpponentGrid] = useState(Array.from({ length: 20 }, () => Array(10).fill(0)))
 	const [piece, setPiece] = useState(null)
 	const [col, setCol] = useState(3)
 	const [row, setRow] = useState(0)
@@ -32,11 +33,23 @@ function Game()
 	const [gameStarted, setGameStarted] = useState(false)
 
 	useEffect(()=> {
+		// Je demande une piece au server
 		socket.emit("needNewPiece")
 
-		socket.on()
+		// Je reçois une piece
+		socket.on("newPiece", (data) => {
+			setPiece(data.piece)
+		})
+		
+		// Mettre a jour la grille de l'adversaire
+		socket.on("updateOtherPlayer", (data) => {
+			
+		})
 
-		socket.on()
+		// je met a jour ma grille apres la penalité
+		socket.on("receivePenalty", (data) => {
+
+		})
 
 		return () => {
 			socket.off("")
