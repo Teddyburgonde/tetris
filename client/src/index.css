@@ -1,8 +1,21 @@
+#container
+{
+    display: flex;
+    gap: 20px;
+}
+
 #game-grid 
 {
 	display: grid;
 	grid-template-columns: repeat(10, 30px);
 	grid-template-rows: repeat(20, 30px);
+}
+
+#game-grid2 
+{
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-template-rows: repeat(20, 30px);
 }
 
 .cell 
