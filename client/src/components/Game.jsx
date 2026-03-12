@@ -52,7 +52,9 @@ function Game()
 		})
 
 		return () => {
-			socket.off("")
+			socket.off("newPiece")
+			socket.off("updateOtherPlayer")
+			socket.off("receivePenalty")
 		}
 	}, []) 
 
