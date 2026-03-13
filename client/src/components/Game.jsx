@@ -1,4 +1,5 @@
 import { createGridCells } from '../utils/grid'
+import { matrix } from '../pieces'
 import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow} from '../utils'
 import { useEffect, useState, useRef } from 'react'
 import socket from '../socket'
@@ -36,6 +37,21 @@ function Game()
 		// Je demande une piece au server
 		socket.emit("needNewPiece")
 
+		const handleKey = (e) => {
+			const result = handleKeyPress(e.key, pieceRef.current, rotationRef.current, 
+				colRef.current, rowRef.current, false, gridRef.current, matrix, 10, 20)
+			if (result)
+			{
+				colRef.current = result.col
+				rowRef.current = result.row
+				rotationRef.current = result.rotationIndex
+				setCol(result.col)
+				setRow(result.row)
+				setRotation(result.rotationIndex)
+			}
+		}
+		window.addEventListener("keydown", handleKey)
+
 		// Je reçois une piece
 		socket.on("newPiece", (data) => {
 			setPiece(data.piece)
@@ -52,10 +68,29 @@ function Game()
 					rowRef.current = result.row;
 				}
 				else if (result.action === 'LOCK')
+				{
 					clearInterval(loop)
+					// Copie la grille actuelle
+					const newGrid = gridRef.current.map(r => [...r])
+					
+					// Récupère la forme de la pièce actuelle
+					const pieceShape = matrix[pieceRef.current][rotationRef.current];
+					
+					for (let j = 0; j < pieceShape.length; j++)
+					{
+						for (let i = 0; i < pieceShape[j].length; i++)
+						{
+							if (pieceShape[j][i] === 1)
+								newGrid[rowRef.current + j][colRef.current + i] = 1
+						}
+					}
+					gridRef.current = newGrid;
+					setGrid(newGrid);
+					socket.emit("needNewPiece")
+				}
 			}, 500)
 		})
-		
+
 		// Mettre a jour la grille de l'adversaire
 		socket.on("updateOtherPlayer", (data) => {
 			
@@ -67,6 +102,7 @@ function Game()
 		})
 
 		return () => {
+			window.removeEventListener("keydown", handleKey)
 			socket.off("newPiece")
 			socket.off("updateOtherPlayer")
 			socket.off("receivePenalty")
@@ -76,11 +112,11 @@ function Game()
 	return (
 		<div id="container">
 			<div id="game-grid">
-				{createGridCells(10, 20)}
+				{createGridCells(grid, piece, col, row, rotation, matrix)}
 			</div>
 
 			<div id="game-grid2">
-				{createGridCells(10, 20)}
+				{createGridCells(opponentGrid, null, 0, 0, 0, matrix)}
 			</div>
 		</div>
 	)

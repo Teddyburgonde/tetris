@@ -1,3 +1,5 @@
+import { matrix } from './pieces'
+
 /**
  * hasCollisionBelow - Vérifie si la pièce actuelle entrerait en collision en tombant d'une case.
  *
@@ -56,10 +58,10 @@ function dropPiece(piece, currentRotationIndex, currentCol, currentRow, grid)
 	const pieceShape = matrix[piece][currentRotationIndex];
 	
 	// On vérifie s'il y a un obstacle en dessous
-	const collision = hasCollisionBelow(pieceShape, currentCol, currentRow, grid);
+	const collision = hasCollisionBelow(pieceShape, currentCol, currentRow, grid, 10, 20);
 
 	if (collision == true)
-		return { action: 'LOCK', col: currentCol, row: currentRow, shape: shape };
+		return { action: 'LOCK', col: currentCol, row: currentRow, shape: pieceShape }
 	else
 		return { action: 'DROP', col: currentCol, row: currentRow + 1 };
 }
