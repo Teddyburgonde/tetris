@@ -67,28 +67,6 @@ function dropPiece(piece, currentRotationIndex, currentCol, currentRow, grid)
 }
 
 
-
-/**
- * Synchronise l'état visuel du DOM avec les données de la grille.
- * Parcourt chaque coordonnée pour colorer ou vider les cellules correspondantes.
- */
-function updateGridDisplay(grid, gameCells, gridWidth, gridHeight) 
-{
-	for (let y = 0; y < gridHeight; y++) 
-	{
-		for (let x = 0; x < gridWidth; x++) 
-		{
-			const cellId = 	y * gridWidth + x;
-
-			if (grid[y][x] === 1)
-				gameCells[cellId].style.backgroundColor = 'blue';
-			else
-				gameCells[cellId].style.backgroundColor = '';
-		}
-	}
-}
-
-
 /**
  * Vérifie si la rotation est possible sans collision ni sortie de grille.
  * Simule la pièce dans sa future position de rotation.
@@ -122,48 +100,6 @@ function canRotate(piece, currentRotationIndex,  currentCol, currentRow, grid, m
 	return true;
 }
 
-
-/**
- * Efface visuellement la pièce de la grille en réinitialisant la couleur des cellules.
- * Utilise les coordonnées et la largeur de la grille pour cibler les bons éléments du DOM.
- */
-function clearPiece(piece, currentCol, currentRow, gameCells, gridWidth)
-{
-	for (let j = 0; j < piece.length; ++j) 
-	{
-		for (let i = 0; i < piece[j].length; ++i) 
-		{
-			if (piece[j][i] === 1)
-			{
-				const cellId = (j + currentRow) * gridWidth + (i + currentCol);
-
-				if (gameCells[cellId])
-					gameCells[cellId].style.backgroundColor = '';
-			}		
-		}
-	}
-}
-
-
-/**
- * Affiche visuellement la pièce sur la grille en appliquant la couleur aux cellules.
- * Calcule l'index des cellules cibles en fonction de la position (col, row) et de la largeur de la grille.
- */
-function displayPiece(piece, currentCol, currentRow, gameCells, gridWidth, color)
-{
-	for (let j = 0; j < piece.length; ++j)
-	{
-		for (let i = 0; i < piece[j].length; ++i) 
-		{
-			if (piece[j][i] === 1) 
-			{
-				const cellId = (j + currentRow) * gridWidth + (i + currentCol);
-				if (gameCells[cellId])
-					gameCells[cellId].style.backgroundColor = color;
-			}
-		}
-	}
-}
 
 
 /**
@@ -228,96 +164,6 @@ function getNewGrid(grid, fullLinesIndices, gridWidth)
 	const emptyLines = new Array(nbLinesToAdd).fill(null).map(() => new Array(gridWidth).fill(0));
 
 	return [...emptyLines, ...remainingRows];
-}
-
-
-/**
- * Applique ou retire la classe CSS 'flash' sur les cellules concernées.
- */
-function toggleLineFlash(fullLinesIndices, gameCells, gridWidth, isAdding)
-{
-	// Logique à implémenter...
-	for (let i = 0; i < fullLinesIndices.length; i++)
-	{
-		// La premiere case de la ligne
-		const cellIndexStart = fullLinesIndices[i] * gridWidth;
-
-		for (let j = 0; j < gridWidth; j++)
-		{
-			const currentCell = gameCells[cellIndexStart + j];
-			if (isAdding === true)
-				currentCell.classList.add('flash');
-			else
-				currentCell.classList.remove('flash');
-		}
-	}
-}
-
-
-/**
- * Crée et anime les étoiles de victoire aux positions des lignes supprimées.
- */
-function spawnVictoryStars(fullLinesIndices)
-{
-	const container = document.getElementById('game-grid');
-	if (!container)
-		return;
-
-	for (let i = 0; i < fullLinesIndices.length; i++)
-	{
-		for (let n = 0; n <= 10; n++)
-		{
-			const star = document.createElement('div');
-			star.classList.add('star');
-
-			let topPosition =  fullLinesIndices[i] * 30;
-			let leftPosition =  Math.random() * 300;
-
-			star.style.left = `${leftPosition}px`;
- 			star.style.top = `${topPosition }px`;
-
-			container.appendChild(star);
-
-			setTimeout(() => {
- 				star.remove();
- 			}, 500);
-		}
-	}
-}
-
-
-
-/**
- * Gère l'enchaînement : Flash & Stars simultanés -> Attente -> Mise à jour Grille & Score.
- */
-async function handleLinesClear(grid, player, cells, gridWidth, gridHeight, socket)
-{
-	const fullLines = findFullLines(grid);
-	const isAdding = false;
-
-	const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-	if (fullLines.length > 0)
-	{
-		// Animation 
-		toggleLineFlash(fullLines, cells, gridWidth, true);
-		spawnVictoryStars(fullLines);
-		
-		await delay(1000);
-		
-		toggleLineFlash(fullLines, cells, gridWidth, false);
-
-		const nextGrid = getNewGrid(grid, fullLines);
-		const nbLignesMatch = fullLines.length;
-		
-		// Pénalité
-		if (nbLignesMatch > 1)
-		{
-			socket.emit("sendPenalty", nbLignesMatch - 1);
-		}
-		updateGridDisplay(nextGrid, cells, gridWidth, gridHeight);
-		return nextGrid;
-	}
-	return grid;
 }
 
 

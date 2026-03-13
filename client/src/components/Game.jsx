@@ -6,15 +6,6 @@ import socket from '../socket'
 
 // startGame — mais on ne l'a pas encore ajouté au serveur
 
-
-
-// La page Game s'affiche → tu demandes une pièce au serveur (socket.emit("needNewPiece"))
-// Le serveur répond avec une pièce → tu la reçois (socket.on("newPiece", ...)) et tu mets à jour piece
-// La pièce tombe automatiquement avec setInterval
-// Le joueur appuie sur une touche → tu calcules la nouvelle position avec handleKeyPress
-// La pièce touche le bas → elle se fixe, tu demandes une nouvelle pièce (socket.emit("needNewPiece"))
-// Retour à l'étape 2
-
 function Game()
 {
 	// useState permet de mettre ecran a jour des qu'on change la valeur de la variable.
@@ -70,12 +61,11 @@ function Game()
 				else if (result.action === 'LOCK')
 				{
 					clearInterval(loop)
-					// Copie la grille actuelle
+
 					const newGrid = gridRef.current.map(r => [...r])
-					
 					// Récupère la forme de la pièce actuelle
 					const pieceShape = matrix[pieceRef.current][rotationRef.current];
-					
+
 					for (let j = 0; j < pieceShape.length; j++)
 					{
 						for (let i = 0; i < pieceShape[j].length; i++)
@@ -84,8 +74,20 @@ function Game()
 								newGrid[rowRef.current + j][colRef.current + i] = 1
 						}
 					}
-					gridRef.current = newGrid;
-					setGrid(newGrid);
+
+					// si la ligne est complete 
+					const fullLines = findFullLines(newGrid)
+					if (fullLines.length > 0)
+					{
+						const clearedGrid = getNewGrid(newGrid, fullLines, 10)
+						gridRef.current = clearedGrid;
+						setGrid(clearedGrid)
+					}
+					else
+					{
+						gridRef.current = newGrid
+						setGrid(newGrid)
+					}
 					socket.emit("needNewPiece")
 				}
 			}, 500)
@@ -123,14 +125,3 @@ function Game()
 }
 
 export default Game
-
-
-// Game
-// ┌─────────────────────────────────────────────┐
-// │  MA GRILLE          ADVERSAIRE    SPECTRUM  │
-// │  ┌──────────┐      ┌──────────┐  ┌──────┐  │
-// │  │          │      │          │  │  ||  │  │
-// │  │    []    │      │   [  ]   │  │  ||  │  │
-// │  │   [][]   │      │          │  │ |||  │  │
-// │  │__________│      │__________│  └──────┘  │
-// └─────────────────────────────────────────────┘
