@@ -12,9 +12,7 @@ function Game()
 	const [grid, setGrid] = useState(Array.from({ length: 20 }, () => Array(10).fill(0)))
 	const [opponentGrid, setOpponentGrid] = useState(Array.from({ length: 20 }, () => Array(10).fill(0)))
 	const [piece, setPiece] = useState(null)
-	const [col, setCol] = useState(3)
-	const [row, setRow] = useState(0)
-	const [rotation, setRotation] = useState(0)
+	const [, forceUpdate] = useState(0)
 	const [isFixed, setIsFixed] = useState(false)
 	const [score, setScore] = useState(0)
 	const [gameStarted, setGameStarted] = useState(false)
@@ -36,9 +34,7 @@ function Game()
 				colRef.current = result.col
 				rowRef.current = result.row
 				rotationRef.current = result.rotationIndex
-				setCol(result.col)
-				setRow(result.row)
-				setRotation(result.rotationIndex)
+				forceUpdate(n => n + 1)
 			}
 		}
 		window.addEventListener("keydown", handleKey)
@@ -55,8 +51,8 @@ function Game()
 				const result = dropPiece(pieceRef.current, rotationRef.current, colRef.current, rowRef.current, gridRef.current)
 				if (result.action === 'DROP')
 				{
-					setRow(result.row)
 					rowRef.current = result.row;
+					forceUpdate(n => n + 1)
 				}
 				else if (result.action === 'LOCK')
 				{
@@ -70,8 +66,13 @@ function Game()
 					{
 						for (let i = 0; i < pieceShape[j].length; i++)
 						{
-							if (pieceShape[j][i] === 1)
-								newGrid[rowRef.current + j][colRef.current + i] = 1
+							if (pieceShape[j][i] === 1) 
+							{
+								const row = rowRef.current + j
+								const col = colRef.current + i
+								if (row >= 0 && row < 20 && col >= 0 && col < 10)
+									newGrid[row][col] = 1
+							}
 						}
 					}
 
@@ -114,7 +115,7 @@ function Game()
 	return (
 		<div id="container">
 			<div id="game-grid">
-				{createGridCells(grid, piece, col, row, rotation, matrix)}
+				{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix)}
 			</div>
 
 			<div id="game-grid2">
