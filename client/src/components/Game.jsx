@@ -1,13 +1,8 @@
 import { createGridCells } from '../utils/grid'
-import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress} from '../utils'
-import { useEffect, useState } from 'react'
+import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow} from '../utils'
+import { useEffect, useState, useRef } from 'react'
 import socket from '../socket'
 
-
-// roomPlayers
-// newPiece
-// updateOtherPlayer
-// receivePenalty
 // startGame — mais on ne l'a pas encore ajouté au serveur
 
 
@@ -31,6 +26,11 @@ function Game()
 	const [isFixed, setIsFixed] = useState(false)
 	const [score, setScore] = useState(0)
 	const [gameStarted, setGameStarted] = useState(false)
+	const pieceRef = useRef(null)
+	const rotationRef = useRef(0)
+	const colRef = useRef(3)
+	const rowRef = useRef(0)
+	const gridRef = useRef(Array.from({ length: 20 }, () => Array(10).fill(0)))
 
 	useEffect(()=> {
 		// Je demande une piece au server
@@ -39,6 +39,21 @@ function Game()
 		// Je reçois une piece
 		socket.on("newPiece", (data) => {
 			setPiece(data.piece)
+			pieceRef.current = data.piece
+			colRef.current = 3
+			rowRef.current = 0
+			rotationRef.current = 0
+			const loop = setInterval(() => {
+		
+				const result = dropPiece(pieceRef.current, rotationRef.current, colRef.current, rowRef.current, gridRef.current)
+				if (result.action === 'DROP')
+				{
+					setRow(result.row)
+					rowRef.current = result.row;
+				}
+				else if (result.action === 'LOCK')
+					clearInterval(loop)
+			}, 500)
 		})
 		
 		// Mettre a jour la grille de l'adversaire
@@ -83,18 +98,3 @@ export default Game
 // │  │   [][]   │      │          │  │ |||  │  │
 // │  │__________│      │__________│  └──────┘  │
 // └─────────────────────────────────────────────┘
-
-useEffect(() => {
-		
-		// J'envoie un message au server "Un jouer a rejoint la room"
-		socket.emit("joinRoom", ({room, playerName}));
-
-		// J'ecoute ce que le server me dit "Voici la liste des joeurs"
-		socket.on("roomPlayers", (data) => {
-			setPlayers(data);
-		});
-		
-		return () => {
-			socket.off("roomPlayers")
-		}
-	}, [])
