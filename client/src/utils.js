@@ -194,7 +194,7 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 			break;
 		case 'ArrowDown':
 		case 's':
-			if (canPieceMoveTo(piece, rotationIndex, currentCol, currentRow, grid, pieces, gridWidth, gridHeight))
+			if (canPieceMoveTo(piece, rotationIndex, currentCol, currentRow + 1, grid, pieces, gridWidth, gridHeight))
 				newRow = currentRow + 1;		
 			break;
 		case 'ArrowLeft':
