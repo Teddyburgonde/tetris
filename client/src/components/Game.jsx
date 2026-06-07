@@ -21,6 +21,7 @@ function Game()
 	const colRef = useRef(3)
 	const rowRef = useRef(0)
 	const gridRef = useRef(Array.from({ length: 20 }, () => Array(10).fill(0)))
+	const [gameOver, setGameOver] = useState(false)
 
 	useEffect(()=> {
 		// Je demande une piece au server
@@ -46,6 +47,11 @@ function Game()
 			colRef.current = 3
 			rowRef.current = 0
 			rotationRef.current = 0
+			if (canPieceMoveTo(data.piece, 0, 3, 0, gridRef.current, matrix, 10, 20) == false)
+			{
+				setGameOver(true)
+				return
+			}
 			const loop = setInterval(() => {
 		
 				const result = dropPiece(pieceRef.current, rotationRef.current, colRef.current, rowRef.current, gridRef.current)
@@ -114,15 +120,16 @@ function Game()
 
 	return (
 		<div id="container">
-			<div id="game-grid">
+        	{gameOver && <div>GAME OVER</div>}
+        	<div id="game-grid">
 				{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix)}
 			</div>
-
 			<div id="game-grid2">
 				{createGridCells(opponentGrid, null, 0, 0, 0, matrix)}
 			</div>
 		</div>
 	)
+
 }
 
 export default Game
