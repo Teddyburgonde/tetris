@@ -42,3 +42,15 @@ Ce projet suit des règles de développement strictes pour garantir la qualité 
     - npm run dev
     - http://localhost:5173/
     -Pour rejoindre une partie spécifique : `http://<ip>:<port>/#<room>[<player_name>]`.
+
+### Tests unitaires
+**Installation** (dans le dossier `tetris/client/`) :
+```bash
+npm install --save-dev vitest @vitest/coverage-v8
+```
+
+**Lancer les tests** (dans le dossier `tetris/client/`) :
+```bash
+npm run test
+npm run coverage
+```
