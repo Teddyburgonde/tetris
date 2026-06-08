@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { findFullLines, getNewGrid, hasCollisionBelow } from '../utils'
+import { findFullLines, getNewGrid, hasCollisionBelow, canPieceMoveTo } from '../utils'
+import { matrix } from '../pieces'
 
 describe('findFullLines', () => {
 
@@ -52,5 +53,22 @@ describe('hasCollisionBelow', () => {
         const shape = [[1, 1]]
         expect(hasCollisionBelow(shape, 0, 4, grid, 10, 20)).toBe(true)
     })
+})
 
+describe('canPieceMoveTo', () => {
+    it('retourne true si la piece peut se deplacer', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        expect(canPieceMoveTo('O', 0, 0, 0, grid, matrix, 10, 20)).toBe(true)
+    })
+
+    it('retourne false si la piece sort a droite', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        expect(canPieceMoveTo('O', 0, 9, 0, grid, matrix, 10, 20)).toBe(false)
+    })
+
+    it('retourne false si un bloc occupe la position', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        grid[0] = Array(10).fill(1)
+        expect(canPieceMoveTo('O', 0, 0, 0, grid, matrix, 10, 20)).toBe(false)
+    })
 })
