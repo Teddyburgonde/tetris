@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { findFullLines, getNewGrid, hasCollisionBelow, canPieceMoveTo } from '../utils'
+import { findFullLines, getNewGrid, hasCollisionBelow, canPieceMoveTo, canRotate } from '../utils'
 import { matrix } from '../pieces'
 
 describe('findFullLines', () => {
@@ -70,5 +70,23 @@ describe('canPieceMoveTo', () => {
         const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
         grid[0] = Array(10).fill(1)
         expect(canPieceMoveTo('O', 0, 0, 0, grid, matrix, 10, 20)).toBe(false)
+    })
+})
+
+describe('canRotate', () => {
+    it('retourne true si la rotation est possible', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        expect(canRotate('T', 0, 0, 0, grid, matrix, 10, 20)).toBe(true)
+    })
+
+    it('retourne false si la rotation sort de la grille', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        expect(canRotate('T', 0, 9, 0, grid, matrix, 10, 20)).toBe(false)
+    })
+
+    it('retourne false si un bloc bloque la rotation', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        grid[1] = Array(10).fill(1)
+        expect(canRotate('T', 0, 0, 0, grid, matrix, 10, 20)).toBe(false)
     })
 })
