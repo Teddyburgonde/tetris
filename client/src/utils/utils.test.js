@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { findFullLines, getNewGrid } from '../utils'
+import { findFullLines, getNewGrid, hasCollisionBelow } from '../utils'
 
 describe('findFullLines', () => {
 
@@ -50,7 +50,7 @@ describe('hasCollisionBelow', () => {
         const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
         grid[5] = Array(10).fill(1)
         const shape = [[1, 1]]
-        expect(hasCollisionBelow(shape, 0, 3, grid, 10, 20)).toBe(true)
+        expect(hasCollisionBelow(shape, 0, 4, grid, 10, 20)).toBe(true)
     })
 
 })
