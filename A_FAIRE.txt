@@ -1,7 +1,7 @@
-1. Séquence de pièces partagée: ❌
+1. Séquence de pièces partagée: ✅
 - Tous les joueurs reçoivent les mêmes pièces dans le même ordre (2-3h)
 
-2. Gestion du host: ❌
+2. Gestion du host: ✅
 - Le premier joueur peut lancer et relancer la partie (2-3h)
 
 3. Fin de partie multi: ❌
@@ -16,33 +16,3 @@
 6. Middleware socket: ❌
 - Encapsuler tous les appels socket.io dans un fichier dédié (1-2h)
 
-
-
-
-1. Séquence de pièces partagée: ❌
-
-
-function handleNeedNewPiece(socket, roomName)
-{
-	const next = rooms[roomName].playerQueues[socket.id]?.shift();
-	if (!next)
-		return;
-	socket.emit("newPiece", { piece: next });
-	socket.to(roomName).emit("updateOtherPlayer", 
-	{
-		key: "newPiece",
-		id: socket.id,
-		piece: next
-	});
-}
-
-
-function handleStartGame(socket, roomName)
-{
-    rooms[roomName].sharedSequence = rooms[roomName].generatePieceSequence(100);
-    Object.keys(rooms[roomName].players).forEach(playerId => {
-        rooms[roomName].playerQueues[playerId] = [...rooms[roomName].sharedSequence]
-    })
-}
-
-Creer un TU pour handleStartGame ???????

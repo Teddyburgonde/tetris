@@ -90,8 +90,9 @@ function handleJoinRoom(socket, room, playerName, io)
  * en la distribuant à tous les joueurs de la room,
  * et en informant tous les joueurs que la partie commence.
  */
-function handleStartGame(roomName, io)
+function handleStartGame(roomName, socket, io)
 {
+	rooms[roomName].hostId = socket.id;
     rooms[roomName].sharedSequence = rooms[roomName].generatePieceSequence(100);
     Object.keys(rooms[roomName].players).forEach(playerId => {
         rooms[roomName].playerQueues[playerId] = [...rooms[roomName].sharedSequence]
@@ -100,12 +101,30 @@ function handleStartGame(roomName, io)
 }
 
 
+/**
+ * Gère la demande de restart du host. Vérifie que c'est bien le host,
+ * régénère la séquence de pièces, et informe tous les joueurs.
+ */
+function handleHostRequestsRestart(socket, roomName, io)
+{
+	if (rooms[roomName].hostId !== socket.id)
+		return;
+
+	rooms[roomName].sharedSequence = rooms[roomName].generatePieceSequence(100);
+	Object.keys(rooms[roomName].players).forEach(playerId => {
+		rooms[roomName].playerQueues[playerId] = [...rooms[roomName].sharedSequence]
+	});
+	io.to(roomName).emit("gameRestarted");
+}
+
+
 /* Connexion d'un joueur */
 io.on("connection", (socket) => {
-	socket.on("startGame", () => handleStartGame(socket.roomName, io));
+	socket.on("startGame", () => handleStartGame(socket.roomName, socket, io));
 	socket.on("joinRoom", ({ room, playerName }) => handleJoinRoom(socket, room, playerName, io));
 	socket.on("needNewPiece", () => handleNeedNewPiece(socket, socket.roomName));
 	socket.on("playerAction", (data) => handlePlayerAction(socket, data, socket.roomName));
+	socket.on("hostRequestsRestart", () => handleHostRequestsRestart(socket, socket.roomName, io));
 	socket.on("disconnect", () => handleDisconnect(socket, socket.roomName));
 	socket.on("sendPenalty", (nbLignes = 1) => handleSendPenalty(socket, socket.roomName, nbLignes, io));
 });

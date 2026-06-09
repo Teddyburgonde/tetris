@@ -1,10 +1,11 @@
 class Game 
 {
-	constructor() 
+	constructor()
 	{
 		this.players = {};
 		this.playerQueues = {};
 		this.gameStarted = false;
+		this.hostId = null;
 	}
 
 	/* Génère une séquence de pièces aléatoires. */
