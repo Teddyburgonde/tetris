@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { findFullLines, getNewGrid, hasCollisionBelow, canPieceMoveTo, canRotate } from '../utils'
+import { findFullLines, getNewGrid, hasCollisionBelow, canPieceMoveTo, canRotate, dropPiece, handleKeyPress } from '../utils'
 import { matrix } from '../pieces'
 
 describe('findFullLines', () => {
@@ -88,5 +88,45 @@ describe('canRotate', () => {
         const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
         grid[1] = Array(10).fill(1)
         expect(canRotate('T', 0, 0, 0, grid, matrix, 10, 20)).toBe(false)
+    })
+})
+
+describe('dropPiece', () => {
+    it('retourne DROP si la piece peut descendre', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = dropPiece('O', 0, 0, 0, grid)
+        expect(result.action).toBe('DROP')
+    })
+
+    it('retourne LOCK si la piece touche le sol', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = dropPiece('O', 0, 0, 18, grid)
+        expect(result.action).toBe('LOCK')
+    })
+
+    it('retourne null si piece est null', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = dropPiece(null, 0, 0, 0, grid)
+        expect(result).toBe(null)
+    })
+})
+
+describe('handleKeyPress', () => {
+    it('retourne null si piece est null', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = handleKeyPress('ArrowLeft', null, 0, 3, 0, false, grid, matrix, 10, 20)
+        expect(result).toBe(null)
+    })
+
+    it('deplace la piece a gauche', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = handleKeyPress('ArrowLeft', 'O', 0, 3, 0, false, grid, matrix, 10, 20)
+        expect(result.col).toBe(2)
+    })
+
+    it('deplace la piece a droite', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = handleKeyPress('ArrowRight', 'O', 0, 3, 0, false, grid, matrix, 10, 20)
+        expect(result.col).toBe(4)
     })
 })
