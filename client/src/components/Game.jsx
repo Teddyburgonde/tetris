@@ -118,9 +118,25 @@ function Game()
 		}
 	}, []) 
 
+
+	function handleRestart() {
+		gridRef.current = Array.from({ length: 20 }, () => Array(10).fill(0))
+		setGrid(Array.from({ length: 20 }, () => Array(10).fill(0)))
+		pieceRef.current = null
+		setPiece(null)
+		rotationRef.current = 0
+		colRef.current = 3
+		rowRef.current = 0
+		setGameOver(false)
+		socket.emit("needNewPiece")
+	}
+
 	return (
 		<div id="container">
-        	{gameOver && <div>GAME OVER</div>}
+        	{gameOver && <div>
+			<p>GAME OVER</p>
+			    <button onClick={handleRestart}>Rejouer</button>
+		</div>}
         	<div id="game-grid">
 				{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix)}
 			</div>
@@ -129,7 +145,6 @@ function Game()
 			</div>
 		</div>
 	)
-
 }
 
 export default Game
