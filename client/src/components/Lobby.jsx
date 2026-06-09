@@ -12,7 +12,6 @@ function Lobby()
 
 	const handleStart = () => {
 		socket.emit("startGame");
-		navigate(`/${room}/${playerName}/game`);
 	}
 
 	useEffect(() => {
@@ -24,9 +23,13 @@ function Lobby()
 		socket.on("roomPlayers", (data) => {
 			setPlayers(data);
 		});
+
+		// Quand la partie démarre, on redirige tous les joueurs vers le jeu
+		socket.on("gameStarted", () => navigate(`/${room}/${playerName}/game`));
 		
 		return () => {
 			socket.off("roomPlayers")
+			socket.off("gameStarted")
 		}
 	}, [])
 

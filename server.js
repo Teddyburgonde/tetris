@@ -80,15 +80,29 @@ function handleJoinRoom(socket, room, playerName, io)
 		rooms[room] = new Game();
 	socket.roomName = room;
 	rooms[room].players[socket.id] = {id : socket.id, name: playerName};
-	rooms[room].playerQueues[socket.id] = rooms[room].generatePieceSequence(100);
 	socket.join(room);
 	io.to(room).emit("roomPlayers", Object.values(rooms[room].players).map(p => p.name));
 }
 
- 
+
+/**
+ * Gère le démarrage de la partie en générant une séquence de pièces partagée,
+ * en la distribuant à tous les joueurs de la room,
+ * et en informant tous les joueurs que la partie commence.
+ */
+function handleStartGame(roomName, io)
+{
+    rooms[roomName].sharedSequence = rooms[roomName].generatePieceSequence(100);
+    Object.keys(rooms[roomName].players).forEach(playerId => {
+        rooms[roomName].playerQueues[playerId] = [...rooms[roomName].sharedSequence]
+    })
+	io.to(roomName).emit("gameStarted")
+}
+
+
 /* Connexion d'un joueur */
 io.on("connection", (socket) => {
-
+	socket.on("startGame", () => handleStartGame(socket.roomName, io));
 	socket.on("joinRoom", ({ room, playerName }) => handleJoinRoom(socket, room, playerName, io));
 	socket.on("needNewPiece", () => handleNeedNewPiece(socket, socket.roomName));
 	socket.on("playerAction", (data) => handlePlayerAction(socket, data, socket.roomName));
