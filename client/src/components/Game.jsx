@@ -23,6 +23,8 @@ function Game()
 	const rowRef = useRef(0)
 	const gridRef = useRef(Array.from({ length: 20 }, () => Array(10).fill(0)))
 	const opponentGridRef = useRef(Array.from({ length: 20 }, () => Array(10).fill(0)))
+	const [gameWinner, setGameWinner] = useState(null)
+	const loopRef = useRef(null)
 
 	const isHost = players[0] === playerName;
 
@@ -58,9 +60,11 @@ function Game()
 			if (canPieceMoveTo(data.piece, 0, 3, 0, gridRef.current, matrix, 10, 20) == false)
 			{
 				setGameOver(true)
+				socket.emit("playerLost")
 				return
 			}
-			const loop = setInterval(() => {
+			if (loopRef.current) clearInterval(loopRef.current)
+			loopRef.current = setInterval(() => {
 
 				const result = dropPiece(pieceRef.current, rotationRef.current, colRef.current, rowRef.current, gridRef.current)
 				if (result.action === 'DROP')
@@ -70,7 +74,7 @@ function Game()
 				}
 				else if (result.action === 'LOCK')
 				{
-					clearInterval(loop)
+					clearInterval(loopRef.current)
 
 					const newGrid = gridRef.current.map(r => [...r])
 					// Récupère la forme de la pièce actuelle
@@ -120,6 +124,8 @@ function Game()
 
 		// Relancer la partie quand le host demande
 		socket.on("gameRestarted", () => {
+			if (loopRef.current) 
+				clearInterval(loopRef.current)
 			gridRef.current = Array.from({ length: 20 }, () => Array(10).fill(0))
 			setGrid(Array.from({ length: 20 }, () => Array(10).fill(0)))
 			opponentGridRef.current = Array.from({ length: 20 }, () => Array(10).fill(0))
@@ -130,7 +136,15 @@ function Game()
 			colRef.current = 3
 			rowRef.current = 0
 			setGameOver(false)
+			setGameWinner(null)
 			socket.emit("needNewPiece")
+		})
+
+		socket.on("gameEnded", (data) => {
+			console.log("gameOver au moment de gameEnded:", gameOver)
+			console.log("winner:", data.winner)
+    		console.log("playerName:", playerName)
+			setGameWinner(data.winner)
 		})
 
 		return () => {
@@ -140,6 +154,7 @@ function Game()
 			socket.off("updateOtherPlayer")
 			socket.off("receivePenalty")
 			socket.off("gameRestarted")
+			socket.off("gameEnded")
 		}
 	}, [])
 
@@ -147,7 +162,7 @@ function Game()
 	function handleRestart() {
 		if (!isHost)
 			return;
-		socket.emit("hostRequestsRestart")
+		socket.emit("hostRequestsRestart", {playerName})
 	}
 
 	return (
@@ -155,6 +170,11 @@ function Game()
         	{gameOver && <div>
 			<p>GAME OVER</p>
 			    <button onClick={handleRestart}>Rejouer</button>
+		</div>}
+			{gameWinner &&  gameWinner !== playerName && <div>
+    		<p>Partie terminée!</p>
+    		<p>Gagnant: {gameWinner}</p>
+			<button onClick={handleRestart}>Rejouer</button>
 		</div>}
         	<div id="game-grid">
 				{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix)}

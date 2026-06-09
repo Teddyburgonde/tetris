@@ -25,8 +25,10 @@ function Lobby()
 		});
 
 		// Quand la partie démarre, on redirige tous les joueurs vers le jeu
-		socket.on("gameStarted", () => navigate(`/${room}/${playerName}/game`));
-		
+		socket.on("gameStarted", () => {
+    		navigate(`/${room}/${playerName}/game`)
+		})
+
 		return () => {
 			socket.off("roomPlayers")
 			socket.off("gameStarted")
