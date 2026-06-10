@@ -81,12 +81,11 @@ function handleJoinRoom(socket, room, playerName, io)
 	if (!rooms[room])
 		rooms[room] = new Game();
 	
-	if (rooms[room].players[socket.id])
-    	return;
 	socket.roomName = room;
-	rooms[room].players[socket.id] = {id : socket.id, name: playerName};
+	if (!rooms[room].players[socket.id])
+		rooms[room].players[socket.id] = {id : socket.id, name: playerName};
 	socket.join(room);
-	io.to(room).emit("roomPlayers", Object.values(rooms[room].players).map(p => p.name));
+	io.to(room).emit("roomPlayers", Object.values(rooms[room].players).map(p => ({ id: p.id, name: p.name })));
 }
 
 

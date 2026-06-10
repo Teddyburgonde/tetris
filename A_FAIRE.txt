@@ -28,32 +28,23 @@ on doit voir une silhouette de la grille du joueur 2 en temps reel et son nom.
 
 Roadmap
 
-1. Calculer le spectre : une fonction pure dans utils.js 
-qui prend ta grille et retourne la hauteur de chaque colonne (tableau de 10 nombres)
+1. Calculer le spectre : une fonction pure dans utils.js ✅
 
-Dans utils.js
+Dans utils.js 
 
-/**
- * Calcule le spectre de la grille : la hauteur de chaque colonne.
- * Pour chaque colonne, on cherche la première ligne occupée en partant du haut,
- * et on en déduit la hauteur (20 - index de cette ligne). Si la colonne est vide, hauteur = 0.
- * @param {Array<Array<number|string>>} grid - Grille de jeu (10 colonnes x 20 lignes).
- * @return {Array<number>} - Tableau de 10 hauteurs (une par colonne).
- */
 function getSpectrum(grid) {
-	return Array.from({ length: 10 }, (_, i) => i)
-		.map(col => {
-		const firstBlockRow = grid.findIndex(ligne => ligne[col] !== 0)
-		if (firstBlockRow === -1)
-			return 0;
-		return 20 - firstBlockRow
-	})
+	const spectrum = new Array(10);
+	for (let col = 0; col < 10; col++) {
+		const firstBlockRow = grid.findIndex(ligne => ligne[col] !== 0);
+		spectrum[col] = firstBlockRow === -1 ? 0 : 20 - firstBlockRow;
+	}
+	return spectrum;
 }
 
 export {getSpectrum}
 
 
-2. Envoyer : à chaque fois que ta grille change (pièce verrouillée), 
+2. Envoyer : à chaque fois que ta grille change (pièce verrouillée), ✅
 émettre updatePlayer avec ton spectre au serveur
  (le serveur relaie déjà via updateOtherPlayer)
 
@@ -63,8 +54,8 @@ import {getSpectrum}
 
 const mySpectrum = getSpectrum(gridRef.current);
 		socket.emit("playerAction", {
-    		type: "spectrum",
-    		spectrum: mySpectrum
+			type: "spectrum",
+			spectrum: mySpectrum
 		});
 
 
@@ -77,8 +68,11 @@ pour stocker le spectre adverse
 const [opponentSpectrum, setOpponentSpectrum] = useState(null)
 
 socket.on("updateOtherPlayer", (data) => {
-	if (data.type === "spectrum")	{
-		setOpponentSpectrum(data.spectrum) 
+	if (data.type === "spectrum") {
+		setOpponentSpectrum(data.spectrum);
+		const visualGrid = spectrumToGrid(data.spectrum);
+		setOpponentGrid(visualGrid);
+		opponentGridRef.current = visualGrid;
 	}
 })
 
@@ -92,20 +86,20 @@ const [opponentSpectrum, setOpponentSpectrum] = useState(null)
 
 
 const spectrumToGrid = (spectrum) => {
-    if (!spectrum)
+	if (!spectrum)
 		return Array.from({ length: 20 }, () => Array(10).fill(0));
-    
-    const newGrid = Array.from({ length: 20 }, () => Array(10).fill(0));
-    
-    for (let col = 0; col < 10; col++) {
-        const height = spectrum[col];
-        for (let row = 19; row >= 20 - height; row--) {
-            if (row >= 0 && row < 20) {
-                newGrid[row][col] = 1;
-            }
-        }
-    }
-    return newGrid;
+	
+	const newGrid = Array.from({ length: 20 }, () => Array(10).fill(0));
+	
+	for (let col = 0; col < 10; col++) {
+		const height = spectrum[col];
+		for (let row = 19; row >= 20 - height; row--) {
+			if (row >= 0 && row < 20) {
+				newGrid[row][col] = 1;
+			}
+		}
+	}
+	return newGrid;
 };
 
 
@@ -113,10 +107,10 @@ function game() {}
 
 
 socket.on("updateOtherPlayer", (data) => {
-    if (data.type === "spectrum") {
-        setOpponentSpectrum(data.spectrum);
-        const visualGrid = spectrumToGrid(data.spectrum);
-        setOpponentGrid(visualGrid);
-        opponentGridRef.current = visualGrid;
-    }
+	if (data.type === "spectrum") {
+		setOpponentSpectrum(data.spectrum);
+		const visualGrid = spectrumToGrid(data.spectrum);
+		setOpponentGrid(visualGrid);
+		opponentGridRef.current = visualGrid;
+	}
 })

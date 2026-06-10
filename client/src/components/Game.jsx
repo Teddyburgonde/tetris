@@ -1,6 +1,6 @@
 import { createGridCells } from '../utils/grid'
 import { matrix } from '../pieces'
-import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow} from '../utils'
+import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum} from '../utils'
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import socket from '../socket'
@@ -17,6 +17,9 @@ function Game()
 	const [gameStarted, setGameStarted] = useState(false)
 	const [players, setPlayers] = useState([])
 	const [gameOver, setGameOver] = useState(false)
+	const [opponentSpectrum, setOpponentSpectrum] = useState(null)
+	const [myColor, setMyColor] = useState('blue')
+	const [opponentColor, setOpponentColor] = useState('red')
 	const pieceRef = useRef(null)
 	const rotationRef = useRef(0)
 	const colRef = useRef(3)
@@ -30,6 +33,22 @@ function Game()
 	const hostId = location.state?.hostId
 	const isHost = socket.id === hostId
 
+	const spectrumToGrid = (spectrum) => {
+		if (!spectrum)
+			return Array.from({ length: 20 }, () => Array(10).fill(0));
+
+		const newGrid = Array.from({ length: 20 }, () => Array(10).fill(0));
+
+		for (let col = 0; col < 10; col++) {
+			const height = spectrum[col];
+			for (let row = 19; row >= 20 - height; row--) {
+				if (row >= 0 && row < 20) {
+					newGrid[row][col] = 1;
+				}
+			}
+		}
+		return newGrid;
+	};
 
 	useEffect(()=> {
     	socket.emit("joinRoom", { room, playerName })
@@ -50,7 +69,18 @@ function Game()
 
 		// Écouter les joueurs pour déterminer si on est host
 		socket.on("roomPlayers", (data) => {
-			setPlayers(data);
+			setPlayers(data.map(p => p.name));
+			const myIndex = data.findIndex(p => p.id === socket.id);
+			if (myIndex === 0)
+			{
+				setMyColor('blue');
+				setOpponentColor('red');
+			}
+			else if (myIndex === 1)
+			{
+				setMyColor('red');
+				setOpponentColor('blue');
+			}
 		});
 
 
@@ -112,7 +142,11 @@ function Game()
 						setGrid(newGrid)
 					}
 
-
+					const mySpectrum = getSpectrum(gridRef.current);
+					socket.emit("playerAction", {
+						type: "spectrum",
+						spectrum: mySpectrum
+					});
 					
 					socket.emit("needNewPiece")
 				}
@@ -121,7 +155,12 @@ function Game()
 
 		// Mettre a jour la grille de l'adversaire
 		socket.on("updateOtherPlayer", (data) => {
-			
+			if (data.type === "spectrum") {
+				setOpponentSpectrum(data.spectrum);
+				const visualGrid = spectrumToGrid(data.spectrum);
+				setOpponentGrid(visualGrid);
+				opponentGridRef.current = visualGrid;
+			}
 		})
 
 		// je met a jour ma grille apres la penalité
@@ -165,7 +204,7 @@ function Game()
 	}, [])
 
 
-	function handleRestart() 
+	function handleRestart()
 	{
 		socket.emit("hostRequestsRestart", {playerName})
 	}
@@ -186,10 +225,10 @@ function Game()
 	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
 </div>}
 		<div id="game-grid">
-    		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix)}
+    		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor)}
 		</div>
 		<div id="game-grid2">
-    		{createGridCells(opponentGrid, null, 0, 0, 0, matrix)}
+    		{createGridCells(opponentGrid, null, 0, 0, 0, matrix, opponentColor)}
 		</div>
 	</div>
 	)

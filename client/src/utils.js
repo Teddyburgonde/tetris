@@ -1,6 +1,24 @@
 import { matrix } from './pieces'
 
 /**
+ * Calcule le spectre de la grille : la hauteur de chaque colonne.
+ * Pour chaque colonne, on cherche la première ligne occupée en partant du haut,
+ * et on en déduit la hauteur (20 - index de cette ligne). Si la colonne est vide, hauteur = 0.
+ * @param {Array<Array<number|string>>} grid - Grille de jeu (10 colonnes x 20 lignes).
+ * @return {Array<number>} - Tableau de 10 hauteurs (une par colonne).
+ */
+function getSpectrum(grid)
+{
+	const spectrum = new Array(10);
+	for (let col = 0; col < 10; col++)
+	{
+		const firstBlockRow = grid.findIndex(ligne => ligne[col] !== 0);
+		spectrum[col] = firstBlockRow === -1 ? 0 : 20 - firstBlockRow;
+	}
+	return spectrum;
+}
+
+/**
  * hasCollisionBelow - Vérifie si la pièce actuelle entrerait en collision en tombant d'une case.
  *
  * Cette fonction pure teste les cases situées sous la pièce pour détecter un contact 
@@ -217,4 +235,4 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 
 
 
-export {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow}
+export {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum}

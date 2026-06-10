@@ -1,7 +1,7 @@
 /**
  * Génère et retourne un tableau de cellules JSX pour la grille de jeu.
  */
-function createGridCells(grid, piece, col, row, rotation, matrix)
+function createGridCells(grid, piece, col, row, rotation, matrix, playerColor = 'blue')
 {
 	const cells = Array.from({length: grid[0].length * grid.length});
 	const cellDivs = cells.map((_, i) => {
@@ -10,8 +10,8 @@ function createGridCells(grid, piece, col, row, rotation, matrix)
 		const y = Math.floor(i / grid[0].length)
 		let color = ''
 		if (grid[y][x] === 1)
-			color = 'blue'
-		if (piece && matrix[piece] && matrix[piece][rotation]) 
+			color = playerColor
+		if (piece && matrix[piece] && matrix[piece][rotation])
 		{
 			const localY = y - row
 			const localX = x - col
@@ -19,7 +19,7 @@ function createGridCells(grid, piece, col, row, rotation, matrix)
 			if (localY >= 0 && localY < pieceShape.length && localX >= 0 && localX < pieceShape[0].length)
 			{
 				if (matrix[piece][rotation][y - row][x - col] === 1)
-					color = 'blue'
+					color = playerColor
 			}
 		}
 

@@ -21,7 +21,7 @@ function Lobby()
 
 		// J'ecoute ce que le server me dit "Voici la liste des joeurs"
 		socket.on("roomPlayers", (data) => {
-			setPlayers(data);
+			setPlayers(data.map(p => p.name));
 		});
 
 		// Quand la partie démarre, on redirige tous les joueurs vers le jeu
