@@ -53,6 +53,7 @@ function Game()
 			setPlayers(data);
 		});
 
+
 		// Je reçois une piece
 		socket.on("newPiece", (data) => {
 			setPiece(data.piece)
@@ -110,6 +111,9 @@ function Game()
 						gridRef.current = newGrid
 						setGrid(newGrid)
 					}
+
+
+					
 					socket.emit("needNewPiece")
 				}
 			}, 500)
@@ -117,7 +121,7 @@ function Game()
 
 		// Mettre a jour la grille de l'adversaire
 		socket.on("updateOtherPlayer", (data) => {
-
+			
 		})
 
 		// je met a jour ma grille apres la penalité

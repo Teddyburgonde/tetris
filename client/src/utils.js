@@ -210,7 +210,10 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 	}
 	const newState = { col: newCol, row: newRow, rotationIndex: newRotationIndex };
 	return newState;
-}			
+}
+
+
+
 
 
 
