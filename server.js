@@ -102,7 +102,7 @@ function handleStartGame(roomName, socket, io)
     Object.keys(rooms[roomName].players).forEach(playerId => {
         rooms[roomName].playerQueues[playerId] = [...rooms[roomName].sharedSequence]
     })
-	io.to(roomName).emit("gameStarted")
+	io.to(roomName).emit("gameStarted", { hostId: socket.id }) 
 }
 
 

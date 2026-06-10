@@ -2,7 +2,7 @@ import { createGridCells } from '../utils/grid'
 import { matrix } from '../pieces'
 import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow} from '../utils'
 import { useEffect, useState, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
 import socket from '../socket'
 
 function Game()
@@ -26,7 +26,10 @@ function Game()
 	const [gameWinner, setGameWinner] = useState(null)
 	const loopRef = useRef(null)
 
-	const isHost = players[0] === playerName;
+	const location = useLocation()
+	const hostId = location.state?.hostId
+	const isHost = socket.id === hostId
+
 
 	useEffect(()=> {
     	socket.emit("joinRoom", { room, playerName })
@@ -141,9 +144,8 @@ function Game()
 		})
 
 		socket.on("gameEnded", (data) => {
-			console.log("gameOver au moment de gameEnded:", gameOver)
-			console.log("winner:", data.winner)
-    		console.log("playerName:", playerName)
+			if (loopRef.current)
+				clearInterval(loopRef.current)
 			setGameWinner(data.winner)
 		})
 
@@ -159,30 +161,33 @@ function Game()
 	}, [])
 
 
-	function handleRestart() {
-		if (!isHost)
-			return;
+	function handleRestart() 
+	{
 		socket.emit("hostRequestsRestart", {playerName})
 	}
 
 	return (
 		<div id="container">
-        	{gameOver && <div>
-			<p>GAME OVER</p>
-			    <button onClick={handleRestart}>Rejouer</button>
-		</div>}
-			{gameWinner &&  gameWinner !== playerName && <div>
-    		<p>Partie terminée!</p>
-    		<p>Gagnant: {gameWinner}</p>
-			<button onClick={handleRestart}>Rejouer</button>
-		</div>}
-        	<div id="game-grid">
-				{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix)}
-			</div>
-			<div id="game-grid2">
-				{createGridCells(opponentGrid, null, 0, 0, 0, matrix)}
-			</div>
+			{gameOver && !gameWinner && <div>
+	<p>GAME OVER</p>
+	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
+</div>}
+{gameWinner && gameWinner === playerName && <div>
+	<p>Tu as gagné !</p>
+	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
+</div>}
+{gameWinner && gameWinner !== playerName && <div>
+	<p>Partie terminée!</p>
+	<p>Gagnant: {gameWinner}</p>
+	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
+</div>}
+		<div id="game-grid">
+    		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix)}
 		</div>
+		<div id="game-grid2">
+    		{createGridCells(opponentGrid, null, 0, 0, 0, matrix)}
+		</div>
+	</div>
 	)
 }
 
