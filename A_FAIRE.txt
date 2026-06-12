@@ -15,29 +15,3 @@
 
 6. Middleware socket: ❌
 - Encapsuler tous les appels socket.io dans un fichier dédié (1-2h)
-
-
-
------------------------------- 
-5. Pénalités: ❌
-- quand tu fais N lignes, l'adversaire reçoit N-1 lignes indestructibles en bas (2-3h)
-
-'P' = bloc de pénalités indestructible 
-Il faut que je generer les blocs 'P' et je dois les transmettre.
-
-Explication: 
-- Un joueur pose une piece et complete N lignes d'un coup.
-- S'il complete plus d'une ligne N > 1 , il punit adversaire en 
-lui envoyant M-1 lignes grises indestructibles qui apparaissent en bas de sa grille.
-- Cote adverse: sa grille se decale vers le haut pour faire 
-de la place a ces N-1 nouvelles lignes en bas de sa grille.
-
-
-
-
-
-Je n'ai pas compris cette parti, explique moi de maniere plus simple stp 
-"Ces lignes 'P' ne peuvent jamais être "traversées" 
-comme une case vide, mais elles comptent dans findFullLines — 
-donc si le joueur arrive à faire une ligne complète qui 
-inclut une ligne 'P', elle peut quand même être nettoyée normalement."

@@ -4,6 +4,9 @@ import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dr
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import socket from '../socket'
+import { emitJoinRoom, emitNeedNewPiece, emitPlayerLost, emitSendPenalty, emitPlayerAction, emitHostRequestsRestart,
+	onRoomPlayers, onNewPiece, onUpdateOtherPlayer, onReceivePenalty, onGameRestarted, onGameEnded,
+	offRoomPlayers, offNewPiece, offUpdateOtherPlayer, offReceivePenalty, offGameRestarted, offGameEnded } from '../socketEvents'
 
 function Game()
 {
@@ -51,8 +54,8 @@ function Game()
 	};
 
 	useEffect(()=> {
-    	socket.emit("joinRoom", { room, playerName })
-		socket.emit("needNewPiece")
+    	emitJoinRoom(room, playerName)
+		emitNeedNewPiece()
 
 		const handleKey = (e) => {
 			const result = handleKeyPress(e.key, pieceRef.current, rotationRef.current,
@@ -68,7 +71,7 @@ function Game()
 		window.addEventListener("keydown", handleKey)
 
 		// Écouter les joueurs pour déterminer si on est host
-		socket.on("roomPlayers", (data) => {
+		onRoomPlayers((data) => {
 			setPlayers(data.map(p => p.name));
 			const myIndex = data.findIndex(p => p.id === socket.id);
 			if (myIndex === 0)
@@ -85,7 +88,7 @@ function Game()
 
 
 		// Je reçois une piece
-		socket.on("newPiece", (data) => {
+		onNewPiece((data) => {
 			setPiece(data.piece)
 			pieceRef.current = data.piece
 			colRef.current = 3
@@ -94,7 +97,7 @@ function Game()
 			if (canPieceMoveTo(data.piece, 0, 3, 0, gridRef.current, matrix, 10, 20) == false)
 			{
 				setGameOver(true)
-				socket.emit("playerLost")
+				emitPlayerLost()
 				return
 			}
 			if (loopRef.current) clearInterval(loopRef.current)
@@ -132,7 +135,7 @@ function Game()
 					const fullLines = findFullLines(newGrid)
 
 					if (fullLines.length > 1)
-						socket.emit("sendPenalty", fullLines.length - 1)
+						emitSendPenalty(fullLines.length - 1)
 
 					if (fullLines.length > 0)
 					{
@@ -147,18 +150,18 @@ function Game()
 					}
 
 					const mySpectrum = getSpectrum(gridRef.current);
-					socket.emit("playerAction", {
+					emitPlayerAction({
 						type: "spectrum",
 						spectrum: mySpectrum
 					});
-					
-					socket.emit("needNewPiece")
+
+					emitNeedNewPiece()
 				}
 			}, 500)
 		})
 
 		// Mettre a jour la grille de l'adversaire
-		socket.on("updateOtherPlayer", (data) => {
+		onUpdateOtherPlayer((data) => {
 			if (data.type === "spectrum") {
 				setOpponentSpectrum(data.spectrum);
 				const visualGrid = spectrumToGrid(data.spectrum);
@@ -168,7 +171,7 @@ function Game()
 		})
 
 		// je met a jour ma grille apres la penalité
-		socket.on("receivePenalty", (nbLignes) => {
+		onReceivePenalty((nbLignes) => {
 			const removedRows = gridRef.current.slice(0, nbLignes)
 			const hasBlockInRemovedRows = removedRows.some(row => row.some(cell => cell !== 0))
 
@@ -179,7 +182,7 @@ function Game()
 			if (hasBlockInRemovedRows || !pieceFits)
 			{
 				setGameOver(true)
-				socket.emit("playerLost")
+				emitPlayerLost()
 				return
 			}
 
@@ -188,7 +191,7 @@ function Game()
 		})
 
 		// Relancer la partie quand le host demande
-		socket.on("gameRestarted", () => {
+		onGameRestarted(() => {
 			if (loopRef.current) 
 				clearInterval(loopRef.current)
 			gridRef.current = Array.from({ length: 20 }, () => Array(10).fill(0))
@@ -202,10 +205,10 @@ function Game()
 			rowRef.current = 0
 			setGameOver(false)
 			setGameWinner(null)
-			socket.emit("needNewPiece")
+			emitNeedNewPiece()
 		})
 
-		socket.on("gameEnded", (data) => {
+		onGameEnded((data) => {
 			if (loopRef.current)
 				clearInterval(loopRef.current)
 			setGameWinner(data.winner)
@@ -213,19 +216,19 @@ function Game()
 
 		return () => {
 			window.removeEventListener("keydown", handleKey)
-			socket.off("roomPlayers")
-			socket.off("newPiece")
-			socket.off("updateOtherPlayer")
-			socket.off("receivePenalty")
-			socket.off("gameRestarted")
-			socket.off("gameEnded")
+			offRoomPlayers()
+			offNewPiece()
+			offUpdateOtherPlayer()
+			offReceivePenalty()
+			offGameRestarted()
+			offGameEnded()
 		}
 	}, [])
 
 
 	function handleRestart()
 	{
-		socket.emit("hostRequestsRestart", {playerName})
+		emitHostRequestsRestart(playerName)
 	}
 
 	return (

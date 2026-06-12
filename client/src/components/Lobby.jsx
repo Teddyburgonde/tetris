@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { useEffect } from 'react'
-import socket from '../socket'
+import { emitJoinRoom, emitStartGame, onRoomPlayers, onGameStarted, offRoomPlayers, offGameStarted } from '../socketEvents'
 
 function Lobby()
 {
@@ -11,27 +11,27 @@ function Lobby()
 	const navigate = useNavigate()
 
 	const handleStart = () => {
-		socket.emit("startGame");
+		emitStartGame();
 	}
 
 	useEffect(() => {
-		
+
 		// J'envoie un message au server "Un jouer a rejoint la room"
-		socket.emit("joinRoom", ({room, playerName}));
+		emitJoinRoom(room, playerName);
 
 		// J'ecoute ce que le server me dit "Voici la liste des joeurs"
-		socket.on("roomPlayers", (data) => {
+		onRoomPlayers((data) => {
 			setPlayers(data.map(p => p.name));
 		});
 
 		// Quand la partie démarre, on redirige tous les joueurs vers le jeu
-		socket.on("gameStarted", (data) => {
+		onGameStarted((data) => {
     		navigate(`/${room}/${playerName}/game`, { state: { hostId: data.hostId } })
 		})
 
 		return () => {
-			socket.off("roomPlayers")
-			socket.off("gameStarted")
+			offRoomPlayers()
+			offGameStarted()
 		}
 	}, [])
 
