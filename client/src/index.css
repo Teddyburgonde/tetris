@@ -4,6 +4,119 @@
     gap: 20px;
 }
 
+.page
+{
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #1a1a2e;
+	font-family: sans-serif;
+}
+
+.card
+{
+	background-color: #ffffff;
+	border-radius: 12px;
+	padding: 32px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	min-width: 280px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.title
+{
+	color: #e63946;
+	text-align: center;
+	margin: 0;
+}
+
+.subtitle
+{
+	text-align: center;
+	margin: 0;
+	color: #333;
+}
+
+.section-title
+{
+	margin: 0;
+	color: #333;
+}
+
+.input
+{
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 1rem;
+}
+
+.button-row
+{
+	display: flex;
+	gap: 12px;
+}
+
+.btn
+{
+	flex: 1;
+	padding: 10px;
+	border: none;
+	border-radius: 6px;
+	font-size: 1rem;
+	cursor: pointer;
+}
+
+.btn-primary
+{
+	background-color: #e63946;
+	color: white;
+}
+
+.btn-primary:hover
+{
+	background-color: #c1121f;
+}
+
+.btn-secondary
+{
+	background-color: #f1f1f1;
+	color: #333;
+}
+
+.btn-secondary:hover
+{
+	background-color: #ddd;
+}
+
+.player-list
+{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.player-item
+{
+	background-color: #f1f1f1;
+	border-radius: 6px;
+	padding: 8px 12px;
+	color: #333;
+}
+
+.error
+{
+	color: #e63946;
+	text-align: center;
+	margin: 0;
+}
+
 #game-grid 
 {
 	display: grid;
