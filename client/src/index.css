@@ -11,11 +11,18 @@
 	grid-template-rows: repeat(20, 30px);
 }
 
-#game-grid2 
+#game-grid2
 {
     display: grid;
     grid-template-columns: repeat(10, 30px);
     grid-template-rows: repeat(20, 30px);
+}
+
+#hold-grid
+{
+    display: grid;
+    grid-template-columns: repeat(4, 30px);
+    grid-template-rows: repeat(4, 30px);
 }
 
 .cell 

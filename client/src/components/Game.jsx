@@ -22,6 +22,9 @@ function Game()
 	const [gameOver, setGameOver] = useState(false)
 	const [opponentSpectrum, setOpponentSpectrum] = useState(null)
 	const [myColor, setMyColor] = useState('blue')
+	const [holdPiece, setHoldPiece] = useState(null)
+	const holdPieceRef = useRef(null)
+	const canHoldRef = useRef(true)
 	const [opponentColor, setOpponentColor] = useState('red')
 	const pieceRef = useRef(null)
 	const rotationRef = useRef(0)
@@ -58,6 +61,37 @@ function Game()
 		emitNeedNewPiece()
 
 		const handleKey = (e) => {
+			if (e.key === 'c')
+			{
+				if (!canHoldRef.current)
+					return
+
+				if (holdPieceRef.current === null)
+				{
+					holdPieceRef.current = pieceRef.current
+					setHoldPiece(pieceRef.current)
+					pieceRef.current = null
+					if (loopRef.current)
+						clearInterval(loopRef.current)
+					emitNeedNewPiece()
+				}
+				else
+				{
+					const temp = holdPieceRef.current
+					holdPieceRef.current = pieceRef.current
+					setHoldPiece(pieceRef.current)
+					pieceRef.current = temp
+					setPiece(temp)
+					colRef.current = 3
+					rowRef.current = 0
+					rotationRef.current = 0
+					forceUpdate(n => n + 1)
+				}
+
+				canHoldRef.current = false
+				return
+			}
+
 			const result = handleKeyPress(e.key, pieceRef.current, rotationRef.current,
 				colRef.current, rowRef.current, false, gridRef.current, matrix, 10, 20)
 			if (result)
@@ -94,6 +128,7 @@ function Game()
 			colRef.current = 3
 			rowRef.current = 0
 			rotationRef.current = 0
+			canHoldRef.current = true
 			if (canPieceMoveTo(data.piece, 0, 3, 0, gridRef.current, matrix, 10, 20) == false)
 			{
 				setGameOver(true)
@@ -205,6 +240,9 @@ function Game()
 			rowRef.current = 0
 			setGameOver(false)
 			setGameWinner(null)
+			holdPieceRef.current = null
+			setHoldPiece(null)
+			canHoldRef.current = true
 			emitNeedNewPiece()
 		})
 
@@ -250,6 +288,9 @@ function Game()
 	<p>Gagnant: {gameWinner}</p>
 	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
 </div>}
+		<div id="hold-grid">
+    		{createGridCells(Array.from({ length: 4 }, () => Array(4).fill(0)), holdPiece, 0, 0, 0, matrix, myColor)}
+		</div>
 		<div id="game-grid">
     		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor, ghostRow)}
 		</div>
