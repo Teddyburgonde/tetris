@@ -130,6 +130,10 @@ function Game()
 
 					// si la ligne est complete
 					const fullLines = findFullLines(newGrid)
+
+					if (fullLines.length > 1)
+						socket.emit("sendPenalty", fullLines.length - 1)
+
 					if (fullLines.length > 0)
 					{
 						const clearedGrid = getNewGrid(newGrid, fullLines, 10)

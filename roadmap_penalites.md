@@ -11,6 +11,80 @@ lui envoyant M-1 lignes grises indestructibles qui apparaissent en bas de sa gri
 de la place a ces N-1 nouvelles lignes en bas de sa grille.
 
 
+✅ Émettre la pénalité (fait) — dans Game.jsx, socket.emit("sendPenalty", fullLines.length - 1) si fullLines.length > 1
+
+❌ Créer addPenaltyLines — dans utils.js, fonction qui prend gridRef.current + nbLines reçus du serveur, enlève nbLines lignes en haut et ajoute nbLines lignes 'P' en bas
+
+❌ Recevoir et afficher — dans Game.jsx, remplir socket.on("receivePenalty", ...) pour appliquer addPenaltyLines, et dans createGridCells (grid.jsx) ajouter la couleur grise pour 'P'
+
+
+
+
+Creer la fonction addPenalite
+
+function addPenaltyLines(newGrid) 
+{
+    const fullLines = findFullLines(newGrid)
+
+    // remonter toute les pieces d'une ligne vers le haut et ensuite 
+    // ajouter une ligne en plus pour adversaire tout en bas ('P')
+
+    while ()
+    nbLines - 1
+
+
+}
+
+
+Appliquer addPenaltyLines a gridCurrent dans Game.jsx
+
+
+
+createGridCells
+ajouter une couleur decider 
+
+
+function createGridCells(grid, piece, col, row, rotation, matrix, playerColor = 'blue')
+{
+	const cells = Array.from({length: grid[0].length * grid.length});
+	const cellDivs = cells.map((_, i) => {
+		// Converti le i pour avoir la position en x et y
+		const x = i % grid[0].length
+		const y = Math.floor(i / grid[0].length)
+		let color = ''
+
+        // if (addPenaltyLines == true)
+            color = gray
+		if (grid[y][x] === 1)
+			color = playerColor
+		if (piece && matrix[piece] && matrix[piece][rotation])
+		{
+			const localY = y - row
+			const localX = x - col
+			const pieceShape = matrix[piece][rotation]
+			if (localY >= 0 && localY < pieceShape.length && localX >= 0 && localX < pieceShape[0].length)
+			{
+				if (matrix[piece][rotation][y - row][x - col] === 1)
+					color = playerColor
+			}
+		}
+
+		return <div key={i} className="cell" style={{backgroundColor: color}}></div>
+	})
+	return cellDivs;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Roadmap - Pénalités (N-1 lignes indestructibles)
 
