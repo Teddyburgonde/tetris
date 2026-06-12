@@ -1,6 +1,6 @@
 import { createGridCells } from '../utils/grid'
 import { matrix } from '../pieces'
-import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum, addPenaltyLines} from '../utils'
+import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum, addPenaltyLines, getGhostRow} from '../utils'
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import socket from '../socket'
@@ -231,6 +231,10 @@ function Game()
 		emitHostRequestsRestart(playerName)
 	}
 
+	let ghostRow = 0
+	if (pieceRef.current)
+		ghostRow = getGhostRow(pieceRef.current, rotationRef.current, colRef.current, rowRef.current, gridRef.current, matrix, 10, 20)
+
 	return (
 		<div id="container">
 			{gameOver && !gameWinner && <div>
@@ -247,7 +251,7 @@ function Game()
 	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
 </div>}
 		<div id="game-grid">
-    		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor)}
+    		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor, ghostRow)}
 		</div>
 		<div id="game-grid2">
     		{createGridCells(opponentGrid, null, 0, 0, 0, matrix, opponentColor)}

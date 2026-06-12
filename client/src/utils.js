@@ -147,6 +147,21 @@ function canPieceMoveTo(pieceName, RotationIndex, targetCol, targetRow, grid, ma
 
 
 /**
+ * Calcule la ligne d'atterrissage de la pièce (ghost) si elle tombait directement,
+ * sans déplacer la pièce actuelle.
+ */
+function getGhostRow(piece, rotationIndex, col, row, grid, matrix, gridWidth, gridHeight)
+{
+	let ghostRow = row;
+
+	while (canPieceMoveTo(piece, rotationIndex, col, ghostRow + 1, grid, matrix, gridWidth, gridHeight))
+		ghostRow++;
+
+	return ghostRow;
+}
+
+
+/**
  * Identifie les indices de toutes les lignes complètes dans la grille.
  * Une ligne est considérée comme complète si chaque cellule est occupée (1 ou 'P').
  */
@@ -251,4 +266,4 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 
 
 
-export {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum, addPenaltyLines}
+export {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum, addPenaltyLines, getGhostRow}
