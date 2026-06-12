@@ -295,33 +295,80 @@ function Game()
 	if (pieceRef.current)
 		ghostRow = getGhostRow(pieceRef.current, rotationRef.current, colRef.current, rowRef.current, gridRef.current, matrix, 10, 20)
 
+	let opponentName = 'Adversaire'
+	const foundOpponent = players.find(p => p !== playerName)
+	if (foundOpponent)
+		opponentName = foundOpponent
+
+	let restartContent = <p className="subtitle">En attente du host...</p>
+	if (isHost)
+		restartContent = <button className="btn btn-primary" onClick={handleRestart}>Rejouer</button>
+
+	let resultContent = null
+	if (gameOver && !gameWinner)
+	{
+		resultContent = (
+			<>
+				<p className="result-title">GAME OVER</p>
+				{restartContent}
+			</>
+		)
+	}
+	else if (gameWinner && gameWinner === playerName)
+	{
+		resultContent = (
+			<>
+				<p className="result-title">Tu as gagné !</p>
+				{restartContent}
+			</>
+		)
+	}
+	else if (gameWinner && gameWinner !== playerName)
+	{
+		resultContent = (
+			<>
+				<p className="result-title">Partie terminée !</p>
+				<p className="result-subtitle">Gagnant : {gameWinner}</p>
+				{restartContent}
+			</>
+		)
+	}
+
 	return (
-		<div id="container">
-			{gameOver && !gameWinner && <div>
-	<p>GAME OVER</p>
-	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
-</div>}
-{gameWinner && gameWinner === playerName && <div>
-	<p>Tu as gagné !</p>
-	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
-</div>}
-{gameWinner && gameWinner !== playerName && <div>
-	<p>Partie terminée!</p>
-	<p>Gagnant: {gameWinner}</p>
-	{isHost ? <button onClick={handleRestart}>Rejouer</button> : <p>En attente du host...</p>}
-</div>}
-		<div id="hold-grid">
-    		{createGridCells(Array.from({ length: 4 }, () => Array(4).fill(0)), holdPiece, 0, 0, 0, matrix, myColor)}
+		<div className="page">
+			<div className="game-container">
+				<div className="side-panel">
+					<h2 className="section-title">Hold</h2>
+					<div id="hold-grid">
+						{createGridCells(Array.from({ length: 4 }, () => Array(4).fill(0)), holdPiece, 0, 0, 0, matrix, myColor)}
+					</div>
+					<p className="score-text">Score : {scoreRef.current}</p>
+				</div>
+
+				<div className="board-panel">
+					<h2 className="section-title">{playerName}</h2>
+					<div id="game-grid">
+						{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor, ghostRow)}
+					</div>
+				</div>
+
+				<div className="side-panel">
+					<h2 className="section-title">{opponentName}</h2>
+					<div id="game-grid2">
+						{createGridCells(opponentGrid, null, 0, 0, 0, matrix, opponentColor)}
+					</div>
+					<p className="score-text">Score : {enemyScoreRef.current}</p>
+				</div>
+			</div>
+
+			{resultContent &&
+				<div className="overlay">
+					<div className="card">
+						{resultContent}
+					</div>
+				</div>
+			}
 		</div>
-		<div id="game-grid">
-    		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor, ghostRow)}
-		</div>
-		<p>Your score: {scoreRef.current}</p>
-		<div id="game-grid2">
-    		{createGridCells(opponentGrid, null, 0, 0, 0, matrix, opponentColor)}
-		</div>
-		<p>Enemy's score: {enemyScoreRef.current}</p>
-	</div>
 	)
 }
 
