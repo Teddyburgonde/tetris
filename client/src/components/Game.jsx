@@ -267,6 +267,11 @@ function Game()
 			if (loopRef.current)
 				clearInterval(loopRef.current)
 			setGameWinner(data.winner)
+			if (data.winner !== playerName)
+			{
+				const sound = new Audio('/fahhh.mp3')
+				sound.play()
+			}
 		})
 
 		return () => {
