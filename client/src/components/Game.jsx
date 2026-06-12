@@ -16,7 +16,6 @@ function Game()
 	const [piece, setPiece] = useState(null)
 	const [, forceUpdate] = useState(0)
 	const [isFixed, setIsFixed] = useState(false)
-	const [score, setScore] = useState(0)
 	const [gameStarted, setGameStarted] = useState(false)
 	const [players, setPlayers] = useState([])
 	const [gameOver, setGameOver] = useState(false)
@@ -34,8 +33,11 @@ function Game()
 	const opponentGridRef = useRef(Array.from({ length: 20 }, () => Array(10).fill(0)))
 	const [gameWinner, setGameWinner] = useState(null)
 	const loopRef = useRef(null)
-	const player1Score = 0
-	const player2Score = 0
+
+	const [score, setScore] = useState(0);
+	const scoreRef = useRef(0)
+	const [enemyScore, setEnemyScore] = useState(0);
+	const enemyScoreRef = useRef(0)
 
 	const location = useLocation()
 	const hostId = location.state?.hostId
@@ -176,6 +178,14 @@ function Game()
 
 					if (fullLines.length > 0)
 					{
+						// Increase score and send it to enemy to update
+						scoreRef.current += fullLines.length; // score is the number of lines cleared
+						setScore(scoreRef.current);
+						emitPlayerAction({
+							type: "score",
+							score: scoreRef.current
+						});
+
 						const clearedGrid = getNewGrid(newGrid, fullLines, 10)
 						gridRef.current = clearedGrid;
 						setGrid(clearedGrid)
@@ -186,17 +196,12 @@ function Game()
 						setGrid(newGrid)
 					}
 
-					player1Score++;
-
 					const mySpectrum = getSpectrum(gridRef.current);
 					emitPlayerAction({
 						type: "spectrum",
 						spectrum: mySpectrum
 					});
-					emitPlayerAction({
-						type: "score",
-						score: player1Score
-					});
+
 
 					emitNeedNewPiece()
 				}
@@ -212,7 +217,8 @@ function Game()
 				opponentGridRef.current = visualGrid;
 			}
 			else if (data.type === "score") { // mewen
-				console.log(data.score);
+				enemyScoreRef.current = data.score;
+				setScore(enemyScoreRef.current);
 			}
 		})
 
@@ -305,11 +311,11 @@ function Game()
 		<div id="game-grid">
     		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor, ghostRow)}
 		</div>
-		<p>Your score: {player1Score}</p>
+		<p>Your score: {scoreRef.current}</p>
 		<div id="game-grid2">
     		{createGridCells(opponentGrid, null, 0, 0, 0, matrix, opponentColor)}
 		</div>
-		<p>Enemy's score: {player2Score}</p>
+		<p>Enemy's score: {enemyScoreRef.current}</p>
 	</div>
 	)
 }
