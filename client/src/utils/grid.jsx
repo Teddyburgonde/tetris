@@ -11,6 +11,8 @@ function createGridCells(grid, piece, col, row, rotation, matrix, playerColor = 
 		let color = ''
 		if (grid[y][x] === 1)
 			color = playerColor
+		if (grid[y][x] === 'P')
+			color = 'gray'
 		if (piece && matrix[piece] && matrix[piece][rotation])
 		{
 			const localY = y - row

@@ -1,6 +1,6 @@
 import { createGridCells } from '../utils/grid'
 import { matrix } from '../pieces'
-import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum} from '../utils'
+import {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum, addPenaltyLines} from '../utils'
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import socket from '../socket'
@@ -168,8 +168,23 @@ function Game()
 		})
 
 		// je met a jour ma grille apres la penalité
-		socket.on("receivePenalty", (data) => {
+		socket.on("receivePenalty", (nbLignes) => {
+			const removedRows = gridRef.current.slice(0, nbLignes)
+			const hasBlockInRemovedRows = removedRows.some(row => row.some(cell => cell !== 0))
 
+			const newGrid = addPenaltyLines(gridRef.current, nbLignes, 10)
+
+			const pieceFits = canPieceMoveTo(pieceRef.current, rotationRef.current, colRef.current, rowRef.current, newGrid, matrix, 10, 20)
+
+			if (hasBlockInRemovedRows || !pieceFits)
+			{
+				setGameOver(true)
+				socket.emit("playerLost")
+				return
+			}
+
+			gridRef.current = newGrid
+			setGrid(newGrid)
 		})
 
 		// Relancer la partie quand le host demande

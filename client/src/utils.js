@@ -186,6 +186,22 @@ function getNewGrid(grid, fullLinesIndices, gridWidth)
 
 
 /**
+ * Ajoute nbLines lignes de pénalité ('P') en bas de la grille.
+ * On retire nbLines lignes en haut pour garder une hauteur totale de 20.
+ */
+function addPenaltyLines(grid, nbLines, gridWidth)
+{
+	const remainingRows = grid.slice(nbLines);
+
+	const penaltyRows = Array.from({ length: nbLines }, () => new Array(gridWidth).fill('P'));
+
+	const newGrid = [...remainingRows, ...penaltyRows];
+
+	return newGrid;
+}
+
+
+/**
  * Calcule le nouvel état de la pièce selon la touche pressée.
  * Retourne null si la pièce est absente ou fixée, sinon retourne { col, row, rotationIndex }.
  */
@@ -235,4 +251,4 @@ function handleKeyPress(key, piece, rotationIndex, currentCol, currentRow, isFix
 
 
 
-export {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum}
+export {canRotate, canPieceMoveTo, findFullLines, getNewGrid, handleKeyPress, dropPiece, hasCollisionBelow, getSpectrum, addPenaltyLines}
