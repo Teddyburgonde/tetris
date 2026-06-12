@@ -37,18 +37,22 @@ function Lobby()
 
 
 	return (
-		<div>
-			<h1>Room: {room}</h1>
-			<h1>Joueur: {playerName}</h1>
+		<div className="page">
+			<div className="card">
+				<h1 className="title">Room: {room}</h1>
+				<p className="subtitle">Joueur: {playerName}</p>
 
-			<h1>Joueurs connectés: </h1>
-			<ul>
-				{players.map((player) => (
-					<li key={player}>{player}</li>
-				))}
-			</ul>
-			{/* Si le premier jouer est le host on affiche le bouton */}
-			{players[0] === playerName && <button onClick={handleStart}>Lancer la partie</button>}
+				<h2 className="section-title">Joueurs connectés</h2>
+				<ul className="player-list">
+					{players.map((player) => (
+						<li className="player-item" key={player}>{player}</li>
+					))}
+				</ul>
+				{/* Si le premier jouer est le host on affiche le bouton */}
+				{players[0] === playerName &&
+					<button className="btn btn-primary" onClick={handleStart}>Lancer la partie</button>
+				}
+			</div>
 		</div>
 	)
 }

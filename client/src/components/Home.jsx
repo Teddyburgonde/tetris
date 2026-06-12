@@ -32,32 +32,36 @@ function Home() {
 		navigate(`/${roomName}/${playerName}`);
 	}
 
-	let secondButton = <button onClick={() => setMode('multi')}>Multi</button>
+	let secondButton = <button className="btn btn-secondary" onClick={() => setMode('multi')}>Multi</button>
 	if (mode === 'multi')
-		secondButton = <button onClick={handleMulti}>Jouer</button>
+		secondButton = <button className="btn btn-secondary" onClick={handleMulti}>Jouer</button>
 
 	return (
-		<div>
-			<h1>Red tetris</h1>
-			<input
-				type="text"
-				placeholder="Nom du joueur"
-				value={playerName}
-				onChange={(e) => setPlayerName(e.target.value)}
-			/>
-			{mode === 'multi' &&
+		<div className="page">
+			<div className="card">
+				<h1 className="title">Red Tetris</h1>
 				<input
+					className="input"
 					type="text"
-					placeholder="Room"
-					value={roomName}
-					onChange={(e) => setRoomName(e.target.value)}
+					placeholder="Nom du joueur"
+					value={playerName}
+					onChange={(e) => setPlayerName(e.target.value)}
 				/>
-			}
-			<div>
-				<button onClick={handleSolo}>Jeu Solo</button>
-				{secondButton}
+				{mode === 'multi' &&
+					<input
+						className="input"
+						type="text"
+						placeholder="Room"
+						value={roomName}
+						onChange={(e) => setRoomName(e.target.value)}
+					/>
+				}
+				<div className="button-row">
+					<button className="btn btn-primary" onClick={handleSolo}>Jeu Solo</button>
+					{secondButton}
+				</div>
+				{error && <p className="error">{error}</p>}
 			</div>
-			{error && <p>{error}</p>}
 		</div>
 	)
 }
