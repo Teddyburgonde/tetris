@@ -31,6 +31,8 @@ function Game()
 	const opponentGridRef = useRef(Array.from({ length: 20 }, () => Array(10).fill(0)))
 	const [gameWinner, setGameWinner] = useState(null)
 	const loopRef = useRef(null)
+	const player1Score = 0
+	const player2Score = 0
 
 	const location = useLocation()
 	const hostId = location.state?.hostId
@@ -149,10 +151,16 @@ function Game()
 						setGrid(newGrid)
 					}
 
+					player1Score++;
+
 					const mySpectrum = getSpectrum(gridRef.current);
 					emitPlayerAction({
 						type: "spectrum",
 						spectrum: mySpectrum
+					});
+					emitPlayerAction({
+						type: "score",
+						score: player1Score
 					});
 
 					emitNeedNewPiece()
@@ -167,6 +175,9 @@ function Game()
 				const visualGrid = spectrumToGrid(data.spectrum);
 				setOpponentGrid(visualGrid);
 				opponentGridRef.current = visualGrid;
+			}
+			else if (data.type === "score") { // mewen
+				console.log(data.score);
 			}
 		})
 
@@ -249,9 +260,11 @@ function Game()
 		<div id="game-grid">
     		{createGridCells(grid, piece, colRef.current, rowRef.current, rotationRef.current, matrix, myColor)}
 		</div>
+		<p>Your score: {player1Score}</p>
 		<div id="game-grid2">
     		{createGridCells(opponentGrid, null, 0, 0, 0, matrix, opponentColor)}
 		</div>
+		<p>Enemy's score: {player2Score}</p>
 	</div>
 	)
 }
