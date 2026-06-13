@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { findFullLines, getNewGrid, hasCollisionBelow, canPieceMoveTo, canRotate, dropPiece, handleKeyPress } from '../utils'
+import { findFullLines, getNewGrid, hasCollisionBelow, canPieceMoveTo, canRotate, dropPiece, handleKeyPress, getSpectrum, addPenaltyLines, getGhostRow } from '../utils'
 import { matrix } from '../pieces'
 
 describe('findFullLines', () => {
@@ -128,5 +128,67 @@ describe('handleKeyPress', () => {
         const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
         const result = handleKeyPress('ArrowRight', 'O', 0, 3, 0, false, grid, matrix, 10, 20)
         expect(result.col).toBe(4)
+    })
+})
+
+describe('getSpectrum', () => {
+
+    it('retourne 0 pour toutes les colonnes si la grille est vide', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        expect(getSpectrum(grid)).toEqual(Array(10).fill(0))
+    })
+
+    it('retourne la hauteur correcte pour une colonne occupee', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        grid[19][0] = 1
+        expect(getSpectrum(grid)[0]).toBe(1)
+    })
+
+    it('calcule la hauteur a partir du premier bloc rencontre', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        grid[15][2] = 1
+        expect(getSpectrum(grid)[2]).toBe(5)
+    })
+})
+
+describe('addPenaltyLines', () => {
+
+    it('ajoute des lignes P en bas de la grille', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = addPenaltyLines(grid, 2, 10)
+        expect(result[18]).toEqual(Array(10).fill('P'))
+        expect(result[19]).toEqual(Array(10).fill('P'))
+    })
+
+    it('garde une grille de la meme hauteur', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        const result = addPenaltyLines(grid, 2, 10)
+        expect(result.length).toBe(20)
+    })
+
+    it('retire le meme nombre de lignes en haut', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        grid[0] = Array(10).fill(1)
+        const result = addPenaltyLines(grid, 1, 10)
+        expect(result[0]).toEqual(Array(10).fill(0))
+    })
+})
+
+describe('getGhostRow', () => {
+
+    it('retourne la ligne du bas si la grille est vide', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        expect(getGhostRow('O', 0, 0, 0, grid, matrix, 10, 20)).toBe(18)
+    })
+
+    it('s\'arrete juste au dessus d\'un bloc existant', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        grid[19] = Array(10).fill(1)
+        expect(getGhostRow('O', 0, 0, 0, grid, matrix, 10, 20)).toBe(17)
+    })
+
+    it('ne bouge pas si la piece est deja posee au sol', () => {
+        const grid = Array.from({ length: 20 }, () => Array(10).fill(0))
+        expect(getGhostRow('O', 0, 0, 18, grid, matrix, 10, 20)).toBe(18)
     })
 })
